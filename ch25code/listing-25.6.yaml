@@ -1,0 +1,78 @@
+# Listing 25.6 — CI pipeline (GitHub Actions syntax) running vectors, fuzzers, property tests
+# and the insecure-API lint on every pull request, with longer fuzzing nightly.
+name: protocol-assurance
+on:
+  pull_request:
+  push: { branches: [main] }
+  schedule: [{ cron: "17 2 * * *" }]          # nightly: long fuzz runs
+
+permissions: { contents: read }
+
+jobs:
+  vectors:                                    # 25.1 — every implementation reproduces every vector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.24" }
+      - run: pip install cryptography==50.* hypothesis
+      - run: python vectors/generate.py --check       # regenerating must give byte-identical files
+      - run: go test ./vectors/...                    # Go reads the same JSON (Listing 18.6 style)
+      - run: cargo test -p murmur-core --test vectors # Rust core: RFC, MLS interop and Murmur vectors
+      - run: python -m pytest vectors/negative        # malformed inputs MUST be rejected
+
+  android-ios-vectors:                        # Kotlin and Swift wrappers on the same files
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./gradlew :core:testDebugUnitTest --tests '*VectorTest*'
+      - run: xcodebuild test -scheme MurmurCoreTests -destination 'platform=iOS Simulator,name=iPhone 16'
+
+  properties:                                 # 25.2 — state-machine tests, fixed seed in CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install cryptography hypothesis pytest
+      - run: python -m pytest -q tests/properties --hypothesis-seed=0 --hypothesis-profile=ci
+
+  fuzz-short:                                 # 25.3 — every parser, a few minutes per PR
+    runs-on: ubuntu-latest
+    strategy: { matrix: { target: [FuzzParse, FuzzDifferential, FuzzSealedEnvelope, FuzzDPoPProof] } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.24" }
+      - run: go test ./envelope/... -run='^$' -fuzz='^${{ matrix.target }}$' -fuzztime=120s
+      - if: failure()
+        uses: actions/upload-artifact@v4          # the failing input becomes a regression test
+        with: { name: "crasher-${{ matrix.target }}", path: "**/testdata/fuzz/**" }
+
+  fuzz-nightly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo install cargo-fuzz
+      - run: cargo fuzz run mls_message_parse -- -max_total_time=3600
+      - run: cargo fuzz run ratchet_header -- -max_total_time=3600
+
+  lint-insecure-apis:                         # 25.5 / 25.8 — known-dangerous APIs never land unreviewed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python ci/lint_insecure.py .
+      - run: go vet ./... && staticcheck ./...
+      - run: cargo clippy --all-targets -- -D warnings
+
+  dependencies:                               # 25.8 — crypto library upgrade policy, enforced
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo deny check advisories bans licenses   # RustSec advisories; AGPL check (Ch 18)
+      - run: govulncheck ./...
+      - run: ./gradlew dependencyCheckAnalyze

@@ -1,0 +1,7 @@
+<!-- res/xml/network_security_config.xml (Murmur) -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <!-- Android 16 (API 36): opt in. Android 17+ (API 37): on by default. -->
+        <certificateTransparency enabled="true" />
+    </base-config>
+</network-security-config>

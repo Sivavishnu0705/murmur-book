@@ -1,0 +1,12 @@
+<!-- Info.plist (excerpt) -->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSExceptionDomains</key>
+    <dict>
+        <key>murmur.example</key>
+        <dict>
+            <key>NSIncludesSubdomains</key><true/>
+            <key>NSExceptionMinimumTLSVersion</key><string>TLSv1.3</string>
+        </dict>
+    </dict>
+</dict>

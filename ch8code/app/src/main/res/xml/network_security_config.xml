@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/res/xml/network_security_config.xml (RELEASE and debug) -->
+<network-security-config>
+
+    <!-- Everything: HTTPS only, system roots only (no user-installed CAs), CT on. -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+        <certificateTransparency enabled="true" />   <!-- Android 16+; ignored before -->
+    </base-config>
+
+    <!-- Public API: system validation + SPKI pins. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">api.murmur.example</domain>
+        <pin-set expiration="2027-06-30">
+            <!-- CA-A current issuing intermediate -->
+            <pin digest="SHA-256">pZEWrYb3RXviM6CaMuoD9K45oxRYxl3r6o2wVpxoB/4=</pin>
+            <!-- CA-A next issuing intermediate (pre-announced by the CA) -->
+            <pin digest="SHA-256">EkqLSW6Jl1MM8VzFhqEcKmKP8PtgnnpnTYDD4XC6gOM=</pin>
+            <!-- Backup: CA-B root, for an emergency CA switch -->
+            <pin digest="SHA-256">EavOPsmWT0hCK0SJ4b77aBV0CjEUTSvCXYTEN0ihacI=</pin>
+        </pin-set>
+    </domain-config>
+
+    <!-- Private endpoints (Chapter 9): ONLY Murmur's private root is trusted. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">enroll.murmur.example</domain>
+        <trust-anchors>
+            <certificates src="@raw/murmur_root_r1" />
+        </trust-anchors>
+    </domain-config>
+
+</network-security-config>

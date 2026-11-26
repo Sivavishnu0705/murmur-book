@@ -1,0 +1,10 @@
+<!-- app/src/debug/res/xml/network_security_config.xml — DEBUG BUILDS ONLY -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">api.murmur.test</domain>
+        <trust-anchors>
+            <!-- The lab's test root and nothing else: no "system", no "user". -->
+            <certificates src="@raw/test_root" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

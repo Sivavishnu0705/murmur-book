@@ -1,0 +1,84 @@
+# Listing 3.1 — Murmur threat model (v0 excerpt). One file, versioned with the code.
+meta:
+  system: murmur
+  version: v0
+  updated: 2026-11-21
+  owner: security@murmur.example
+
+assets:
+  - id: A-MSG
+    name: Message content
+    sensitivity: high          # high | medium | low
+    lifetime: years            # how long it must stay secret
+  - id: A-CONTACTS
+    name: Contact list and social graph
+    sensitivity: high
+    lifetime: years
+  - id: A-TOKEN
+    name: Access token
+    sensitivity: high
+    lifetime: hours
+  - id: A-PASSWORD
+    name: Account password
+    sensitivity: high
+    lifetime: until changed
+
+adversaries:
+  - id: ADV-NET
+    name: Network attacker (Dolev-Yao)
+    capabilities: [read, drop, inject, replay, reorder]
+  - id: ADV-SERVER
+    name: Server breach or malicious operator
+    capabilities: [read-storage, modify-responses, serve-different-keys]
+  - id: ADV-PUSH
+    name: Push provider
+    capabilities: [read-push-payload, observe-timing]
+
+trust_boundaries:
+  - id: TB-DEVICE-NET
+    between: [device, network]
+  - id: TB-CLIENT-RELAY
+    between: [murmur-client, murmur-relay]
+  - id: TB-RELAY-PUSH
+    between: [murmur-push, push-provider]
+
+goals:
+  - id: G-1
+    asset: A-MSG
+    adversary: ADV-SERVER
+    property: confidentiality
+    statement: >
+      The server, its operators and anyone who breaches it cannot read message
+      content, past or future.
+    assumptions:
+      - Endpoints are not compromised at the time of sending or reading.
+      - Users who care have verified safety numbers.
+    out_of_scope:
+      - Message metadata (covered by G-6).
+    delivered_by: [ch18, ch19, ch20]
+
+threats:
+  - id: T-01
+    title: Server reads all stored messages
+    stride: I                   # S T R I D E
+    asset: A-MSG
+    adversary: ADV-SERVER
+    boundary: TB-CLIENT-RELAY
+    likelihood: 5               # 1 (rare) .. 5 (expected)
+    impact: 5                   # 1 (minor) .. 5 (catastrophic)
+    status: open                # open | mitigated | accepted
+    violates: [G-1]
+    mitigation: End-to-end encryption; relay stores ciphertext only.
+    chapters: [ch18, ch19, ch29]
+  - id: T-02
+    title: Push payload exposes message preview
+    stride: I
+    asset: A-MSG
+    adversary: ADV-PUSH
+    boundary: TB-RELAY-PUSH
+    likelihood: 5
+    impact: 4
+    status: open
+    violates: [G-1]
+    mitigation: Content-free wake-up pushes; decrypt on device in NSE / FCM handler.
+    chapters: [ch21, ch29]

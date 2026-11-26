@@ -1,0 +1,10 @@
+# Versions used for the book (Appendix E.2). Later versions usually work.
+cryptography==50.0.1
+protobuf==7.36.1
+grpcio-tools==1.85.4
+pyyaml==6.0.3
+noiseprotocol==0.3.1
+hypothesis==6.170.17
+pytest==9.1.1
+sqlcipher3-binary
+psycopg[binary]==3.3.9

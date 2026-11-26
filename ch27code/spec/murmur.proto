@@ -1,0 +1,141 @@
+// Assembled from the book: Listing 26.1 + the Chapter 27 spec change (five ErrorCode values).
+// murmur.proto
+// Listing 26.1 — murmur.proto: Murmur Protocol v1 envelope and API definitions.
+// Rules (§26.3): (1) protobuf is the TRANSPORT encoding only — every signature, MAC and AEAD
+// associated data covers a canonical, length-prefixed encoding defined in the spec, or the
+// exact bytes received, never a re-serialization; (2) security-relevant fields are never
+// optional-with-a-default: absence is an error; (3) unknown fields are ignored only in
+// messages marked "extensible"; (4) field numbers are never reused.
+syntax = "proto3";
+package murmur.v1;
+
+// ───────────────────────────── Outer envelope (seen by murmur-relay) ─────────────────────────────
+message Envelope {
+  uint32 version = 1;                 // MUST be 1; anything else is rejected, never "best effort"
+  EnvelopeType type = 2;
+  string recipient_device = 3;        // routing only, e.g. "dev-8f2c1a"
+  bytes content = 4;                  // per type: PreKeyMessage | RatchetMessage | SealedEnvelope | MLS bytes
+  uint64 server_timestamp_ms = 5;     // set by the relay on receipt; NOT authenticated, display only
+  bytes server_guid = 6;              // relay's id for acknowledgement after COMMIT (Ch 19 §19.9)
+}
+
+enum EnvelopeType {
+  ENVELOPE_TYPE_UNSPECIFIED = 0;      // always rejected
+  PREKEY_MESSAGE = 1;                 // first messages of a 1:1 session (X3DH / PQXDH, Ch 18)
+  RATCHET_MESSAGE = 2;                // Double Ratchet (Ch 19), identified sender path
+  SEALED_SENDER = 3;                  // Ch 21: content is a SealedEnvelope
+  MLS_MESSAGE = 4;                    // RFC 9420 MLSMessage (PrivateMessage / PublicMessage), Ch 23
+  MLS_WELCOME = 5;                    // RFC 9420 Welcome
+}
+
+// ───────────────────────────── 1:1 content ─────────────────────────────
+message PreKeyMessage {
+  uint32 suite = 1;                   // CipherSuite id (§26.3 table)
+  bytes identity_key = 2;             // sender device IK, 32 bytes (X25519)
+  bytes ephemeral_key = 3;            // EK_A, 32 bytes
+  uint32 signed_prekey_id = 4;
+  optional uint32 one_time_prekey_id = 5;   // absent ⇒ 3-DH X3DH (Ch 18 §18.5): replay cache applies
+  uint32 pq_prekey_id = 6;            // PQXDH suites only
+  bytes kem_ciphertext = 7;           // PQXDH: ML-KEM-1024 ciphertext, 1568 bytes
+  RatchetMessage message = 8;         // the first Double Ratchet message
+}
+
+message RatchetMessage {
+  bytes header = 1;                   // CANONICAL 40-byte header: ratchet_key(32) ‖ pn(u32 BE) ‖ n(u32 BE)
+  bytes ciphertext = 2;               // AES-256-GCM; AD = Encode(IK_A) ‖ Encode(IK_B) ‖ header
+}
+
+message SealedEnvelope {              // Ch 21 §21.2; the delivery token travels in the request, not here
+  bytes ephemeral_key = 1;            // 32 bytes
+  bytes ciphertext = 2;               // AES-256-GCM over padded SenderCertificate ‖ inner Envelope
+}
+
+message SenderCertificate {           // signed by murmur-auth; verified by the RECIPIENT
+  string account = 1;
+  string device = 2;
+  bytes identity_key = 3;
+  uint64 expires_unix = 4;
+  bytes signature = 5;                // Ed25519 over Framed("murmur sender cert v1", …), spec §5.3
+}
+
+// ───────────────────────────── Decrypted content (inside E2EE, padded) ─────────────────────────────
+message Content {                     // extensible: unknown fields ignored by older clients
+  oneof body {
+    DataMessage data = 1;
+    Receipt receipt = 2;
+    SyncMessage sync = 3;             // to the sender's own other devices
+  }
+  bytes padding = 15;                 // random bytes to the 160-byte bucket (Ch 21 §21.6)
+}
+
+message DataMessage {
+  string conversation_id = 1;
+  uint64 sent_at_ms = 2;              // sender clock; display only
+  string text = 3;
+  repeated AttachmentPointer attachments = 4;
+  bytes client_message_id = 5;        // 16 random bytes: dedupe (Ch 19 §19.9)
+}
+
+message AttachmentPointer {           // Ch 21 §21.5
+  string cdn_id = 1;
+  bytes key = 2;                      // 32-byte random STREAM key (or 64-byte EtM key, legacy)
+  bytes ciphertext_sha256 = 3;        // digest of the uploaded blob
+  uint64 size = 4;
+  string content_type = 5;
+  bytes thumbnail = 6;                // sender-generated, encrypted inline (small)
+}
+
+message Receipt { repeated bytes client_message_ids = 1; enum Kind { DELIVERED = 0; READ = 1; } Kind kind = 2; }
+message SyncMessage { DataMessage sent = 1; string destination_account = 2; }
+
+// ───────────────────────────── API (murmur-api / murmur-auth) ─────────────────────────────
+message PreKeyBundle {                // Ch 18 §18.3; client MUST verify both signatures
+  bytes identity_key = 1;
+  uint32 signed_prekey_id = 2;
+  bytes signed_prekey = 3;
+  bytes signed_prekey_signature = 4;  // XEdDSA(IK, 0x05 ‖ SPK)
+  optional uint32 one_time_prekey_id = 5;
+  bytes one_time_prekey = 6;
+  uint32 pq_prekey_id = 7;
+  bytes pq_prekey = 8;                // ML-KEM-1024 encapsulation key
+  bytes pq_prekey_signature = 9;      // XEdDSA(IK, 0x08 ‖ PQPK)
+}
+
+message IdentityKeyUpload {           // Ch 24 Listing 24.1 (JSON there, protobuf in the build)
+  string account = 1;
+  string device = 2;
+  bytes identity_key = 3;
+  bytes dpop_public_key = 4;          // uncompressed P-256
+  int64 issued_at = 5;
+  bytes signature_dpop = 6;           // over Framed("murmur/v1/identity-key-upload", …, tls_exporter, …)
+  bytes signature_identity = 7;
+}
+
+message SignedDeviceList {            // Ch 20 Listing 20.1
+  bytes encoded = 1;                  // canonical DeviceList encoding (the signed bytes, verbatim)
+  bytes aik_signature = 2;            // Ed25519 by the account identity key
+  bytes kt_inclusion_proof = 3;       // Ch 20 §20.5
+}
+
+message Error {
+  ErrorCode code = 1;
+  bool retryable = 2;                 // transport/availability only; NEVER for crypto failures
+  string detail = 3;                  // human-readable, no secrets, no oracles
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  MALFORMED = 1;                      // parse/encoding failure
+  UNSUPPORTED_VERSION = 2;
+  UNSUPPORTED_SUITE = 3;
+  STEP_UP_REQUIRED = 4;               // RFC 9470 challenge accompanies it
+  RATE_LIMITED = 5;
+  STALE_EPOCH = 6;                    // MLS commit lost the race (Ch 23 §23.8)
+  NOT_FOUND = 7;                      // uniform for "absent" and "not yours"
+  DECRYPTION_FAILED = 8;              // client-side only; uniform, logged as a security event
+  UNAUTHENTICATED = 9;   // token, DPoP proof or delivery token invalid; WWW-Authenticate says which
+  FORBIDDEN = 10;        // authenticated, but not allowed (scope, attestation, mTLS policy)
+  UNAVAILABLE = 11;      // storage or dependency failure; the only code besides RATE_LIMITED and STALE_EPOCH that is retryable
+  CONFLICT = 12;         // a write that would replace something immutable: identity key, AIK, device-list version, attachment
+  DEVICE_MISMATCH = 13;  // the send did not address exactly the recipient's active devices (§27.4)
+}

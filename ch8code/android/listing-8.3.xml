@@ -1,0 +1,32 @@
+<!-- Info.plist (excerpt) -->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <!-- No NSAllowsArbitraryLoads: ATS defaults apply to every connection. -->
+
+    <key>NSExceptionDomains</key>
+    <dict>
+        <key>murmur.example</key>
+        <dict>
+            <key>NSIncludesSubdomains</key><true/>
+            <!-- Stricter than the ATS default (TLS 1.2): Chapter 6. -->
+            <key>NSExceptionMinimumTLSVersion</key><string>TLSv1.3</string>
+        </dict>
+    </dict>
+
+    <key>NSPinnedDomains</key>
+    <dict>
+        <key>api.murmur.example</key>
+        <dict>
+            <key>NSIncludesSubdomains</key><false/>
+            <key>NSPinnedCAIdentities</key>
+            <array>
+                <dict><key>SPKI-SHA256-BASE64</key>
+                      <string>pZEWrYb3RXviM6CaMuoD9K45oxRYxl3r6o2wVpxoB/4=</string></dict>
+                <dict><key>SPKI-SHA256-BASE64</key>
+                      <string>EkqLSW6Jl1MM8VzFhqEcKmKP8PtgnnpnTYDD4XC6gOM=</string></dict>
+                <dict><key>SPKI-SHA256-BASE64</key>
+                      <string>EavOPsmWT0hCK0SJ4b77aBV0CjEUTSvCXYTEN0ihacI=</string></dict>
+            </array>
+        </dict>
+    </dict>
+</dict>

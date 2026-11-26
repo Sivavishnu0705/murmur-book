@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.hypothesis/
+*_pb2.py
+target/
+.idea/
+.vscode/
+.DS_Store
+# lab secrets: never commit keys, key logs or a lab PKI
+keys.log
+*.key.pem
+murmur-pki/
