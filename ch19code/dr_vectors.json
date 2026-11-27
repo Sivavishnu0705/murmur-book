@@ -1,0 +1,44 @@
+{
+ "sk": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+ "ad": "05aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa05bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+ "bob_spk_priv": "5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+ "ratchet_privs": "0x20.. repeated bytes, in order of generation",
+ "messages": [
+  {
+   "from": "A",
+   "header": "06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000000000",
+   "ct": "3df99cef02cd305fa5914a6d2793522033d6",
+   "rk_after_recv": "da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9"
+  },
+  {
+   "from": "A",
+   "header": "06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000000001",
+   "ct": "5adb21271e55b0e3e09c7b8b65df51128bee",
+   "rk_after_recv": "da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9"
+  },
+  {
+   "from": "B",
+   "header": "7d34a4815fa6b982535e60af3bd9b49556816080f1641ff81d2b7c8ae8268a440000000000000000",
+   "ct": "56b0b0df2bce1f3a04200cbcdef352260d99",
+   "rk_after_recv": "09b2880bc7ac50f2fc49e1a8b75bd0a066558cc842fef7aefe965ecd47dee921"
+  },
+  {
+   "from": "A",
+   "header": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f200000000200000000",
+   "ct": "c24b9eb62b0564a642f0aab866b101f8f8ff",
+   "rk_after_recv": "a54369b310021a0fcb652784e74e2d841dd6b32c977182727809f89773e0dfb8"
+  },
+  {
+   "from": "B",
+   "header": "9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100000000",
+   "ct": "ca3d624eb46b4cdc90cce923313bfef7a74a",
+   "rk_after_recv": "65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d"
+  },
+  {
+   "from": "B",
+   "header": "9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100000001",
+   "ct": "e5fc44ee36acbf88e88ecf15e0c10f6a7f33",
+   "rk_after_recv": "65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d"
+  }
+ ]
+}

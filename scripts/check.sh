@@ -48,10 +48,9 @@ run appendix-c sh -c "python3 gen_vectors.py | diff - expected_output.txt"   # b
 
 echo "== Go: every program directory must build and pass go vet"
 # Directories that need code the book describes but does not print (see README, "Known gaps").
-SKIP="./ch14code/lab ./ch27code/server ./ch28code/server ./ch29code/server ./ch30code/server"
+SKIP="./ch14code/lab ./ch14code/library ./ch27code/server ./ch28code/server ./ch29code/server ./ch30code/server"
 for d in $(find . -name go.mod -printf '%h\n' | sort); do
   case " $SKIP " in *" $d "*) echo "skip  $d (incomplete in the manuscript)"; continue;; esac
-  if [ "$d" = ./ch14code/library ]; then run "$d" sh -c 'go mod tidy && go vet .'; continue; fi
   run "$d" go vet .
   grep -lq 'go:build serve' "$d"/*.go 2>/dev/null && run "$d" go vet -tags serve .
 done

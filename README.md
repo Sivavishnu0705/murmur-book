@@ -62,7 +62,7 @@ On every push, `scripts/check.sh` checks the following:
 
 - **45 Python listings and labs** run and finish without errors, including every Part IV protocol (AKE, Noise, X3DH, PQXDH, Double Ratchet, safety numbers, key transparency, sender keys) and the Chapter 25 fuzzers and property tests.
 - **Appendix C** regenerates every test vector, and its output must be **identical, byte for byte,** to the output printed in the book.
-- **25 Go programs** build and pass `go vet`.
+- **24 Go programs** build and pass `go vet`.
 - The three protobuf schemas compile.
 
 Kotlin, Swift, and Rust aren't built in CI. The book's Appendix E.2 says how each was checked.
@@ -75,6 +75,7 @@ The book describes some supporting code without printing it, so that code isn't 
 |---|---|---|
 | `ch27code/server` … `ch30code/server` | `main.go` (routing and wiring), `store.go` (in-memory store), shared types and helpers | Chapter 27 lists them under "Described only" |
 | `ch14code/lab` | `cborEncode` helper | Not printed |
+| `ch14code/library` | murmur-auth's `Account`, `AccountDB` and `ErrConfirmFromAnotherDevice` types | Listing 14.3 uses them but doesn't print them |
 | Rust crates (`core/`, `ch23code/`) | `Cargo.toml` files | Not printed |
 | Chapters 27–31 labs | Need the running server above | — |
 
