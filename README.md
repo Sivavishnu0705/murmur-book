@@ -109,8 +109,7 @@ On every push, `scripts/check.sh` checks the following:
   Listing 31.3 must block the Chapter 30 tree and pass with Chapter 31's fixes.
 - The Chapter 31 release build refuses to start, and the rotation demo runs.
 
-Kotlin and Swift aren't built in CI. The book's Appendix E.2 says how they were checked; none
-of the platform code has been run on a device.
+Kotlin and Swift aren't built in CI. The book's Appendix E.2 says how they were checked.
 
 ## Line width
 

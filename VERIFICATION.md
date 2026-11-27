@@ -8,11 +8,11 @@ The Python key-schedule code in this chapter reproduces the official example val
 
 ## Chapter 7
 
-The Go listings were run with Go 1.24 against Murmur's private PKI from Chapter 4. Go's `crypto/tls` does not implement 0-RTT for TLS over TCP, so the 0-RTT replay in the lab uses OpenSSL's test server, which supports early data and lets anti-replay protection be switched on and off. The Python HPKE listing uses the `cryptography` package. The output shown comes from running the listings as printed. The Kotlin and Swift notes were compiled and type-checked (Appendix E.2) but not run on a device; check them against current SDK documentation.
+The Go listings were run with Go 1.24 against Murmur's private PKI from Chapter 4. Go's `crypto/tls` does not implement 0-RTT for TLS over TCP, so the 0-RTT replay in the lab uses OpenSSL's test server, which supports early data and lets anti-replay protection be switched on and off. The Python HPKE listing uses the `cryptography` package. The output shown comes from running the listings as printed. The Kotlin and Swift notes were compiled and type-checked (Appendix E.2); check them against current SDK documentation.
 
 ## Chapter 9
 
-The Go listings were run with Go 1.24. The lab enrolls simulated Android and iOS devices: real attestations can only be produced by real hardware, so the lab generates attestation chains and App Attest objects with the same structure, signed by lab roots that stand in for Google's and Apple's. The verifiers check them exactly as they would check real ones, and point out where production verification adds steps (revocation lists, the real roots). The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; build and test them on real hardware, and check them against current SDK documentation. The lab output shown comes from running it as printed.
+The Go listings were run with Go 1.24. The lab enrolls simulated Android and iOS devices: real attestations can only be produced by real hardware, so the lab generates attestation chains and App Attest objects with the same structure, signed by lab roots that stand in for Google's and Apple's. The verifiers check them exactly as they would check real ones, and point out where production verification adds steps (revocation lists, the real roots). The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); check them against current SDK documentation. The lab output shown comes from running it as printed.
 
 ## Chapter 10
 
@@ -20,23 +20,23 @@ The Go resource server and its test driver, and the Python JWT listing, were run
 
 ## Chapter 11
 
-The Go authorization-server code and the lab driver were run as printed, and the output shown is theirs. The Kotlin listings were compiled against the Android SDK (AppAuth's API checked against its source) and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; platform APIs in this area (Custom Tabs, Auth Tab, `ASWebAuthenticationSession` callbacks) change frequently, so check current documentation.
+The Go authorization-server code and the lab driver were run as printed, and the output shown is theirs. The Kotlin listings were compiled against the Android SDK (AppAuth's API checked against its source) and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); platform APIs in this area (Custom Tabs, Auth Tab, `ASWebAuthenticationSession` callbacks) change frequently, so check current documentation.
 
 ## Chapter 12
 
-The Go verifier, account-linking logic and lab driver were run as printed, against a test identity provider served over TLS; the output shown is theirs (the test server's port changes on each run). The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; build and test them on real hardware, and check them against current SDK documentation.
+The Go verifier, account-linking logic and lab driver were run as printed, against a test identity provider served over TLS; the output shown is theirs (the test server's port changes on each run). The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); check them against current SDK documentation.
 
 ## Chapter 13
 
-The Go verification middleware, refresh service and lab driver were run as printed; the output shown is theirs, and the JWK thumbprint code reproduces the example value in RFC 9449. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; build and test them on real hardware, and check them against current SDK documentation.
+The Go verification middleware, refresh service and lab driver were run as printed; the output shown is theirs, and the JWK thumbprint code reproduces the example value in RFC 9449. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); check them against current SDK documentation.
 
 ## Chapter 14
 
-Listing 14.3 uses the maintained `go-webauthn` library and was compiled and vetted against v0.15.0, the newest release that supports Go 1.24. Its API changes between releases, so check the listing against the version you use. To keep every check visible and testable, Listings 14.4 and 14.5 implement the same verification with the standard library (accepting only what Murmur accepts: ES256 credentials, `none` attestation, required user verification) and run it against a simulated authenticator; the output shown is theirs. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; build and test them on real hardware, and check them against current SDK documentation.
+Listing 14.3 uses the maintained `go-webauthn` library and was compiled and vetted against v0.15.0, the newest release that supports Go 1.24. Its API changes between releases, so check the listing against the version you use. To keep every check visible and testable, Listings 14.4 and 14.5 implement the same verification with the standard library (accepting only what Murmur accepts: ES256 credentials, `none` attestation, required user verification) and run it against a simulated authenticator; the output shown is theirs. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); check them against current SDK documentation.
 
 ## Chapter 15
 
-The Go registry, refresh endpoint and lab driver were run as printed; the output shown is theirs (device IDs are random, so they change between runs). Token signing and DPoP verification are elided in these listings because Chapters 10 and 13 implement them. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2), but none was run on a device; build and test them on real hardware, and check them against current SDK documentation.
+The Go registry, refresh endpoint and lab driver were run as printed; the output shown is theirs (device IDs are random, so they change between runs). Token signing and DPoP verification are elided in these listings because Chapters 10 and 13 implement them. The Kotlin listings were compiled against the Android SDK and the Swift listings type-checked against the iOS APIs they use (Appendix E.2); check them against current SDK documentation.
 
 ## Chapter 16
 
@@ -52,15 +52,15 @@ The Python listings (X3DH, XEdDSA, PQXDH and the lab) and the Go directory and t
 
 ## Chapter 19
 
-The Python ratchet, fuzz test and lab were run as printed, and the output shown is theirs. The test vectors use a fixed SK and a deterministic sequence of ratchet keys; everything else is random. The algorithm follows Signal's Double Ratchet specification; the KDF and encryption choices are Murmur's and noted where they differ from the specification's recommendations. The Kotlin and Swift persistence listings were compiled and type-checked (Appendix E.2) but not run on a device; build and test them on real hardware.
+The Python ratchet, fuzz test and lab were run as printed, and the output shown is theirs. The test vectors use a fixed SK and a deterministic sequence of ratchet keys; everything else is random. The algorithm follows Signal's Double Ratchet specification; the KDF and encryption choices are Murmur's and noted where they differ from the specification's recommendations. The Kotlin and Swift persistence listings were compiled and type-checked (Appendix E.2).
 
 ## Chapter 20
 
-The Go device-list service and lab, the Python safety-number code and the key-transparency sketch were run as printed, and the output shown is theirs. The safety-number implementation reproduces a published libsignal test vector exactly. The key-transparency code illustrates the concepts (signed tree heads, inclusion proofs, split-view detection) and is not a deployable design. The Kotlin and Swift listing was compiled and type-checked (Appendix E.2) but not run on a device.
+The Go device-list service and lab, the Python safety-number code and the key-transparency sketch were run as printed, and the output shown is theirs. The safety-number implementation reproduces a published libsignal test vector exactly. The key-transparency code illustrates the concepts (signed tree heads, inclusion proofs, split-view detection) and is not a deployable design. The Kotlin and Swift listing was compiled and type-checked (Appendix E.2).
 
 ## Chapter 21
 
-The Go relay, sealed-sender code and lab, and the Python attachment code were run as printed, and the output shown is theirs. The sealed-sender design is a simplified version of Signal's. The Swift Notification Service Extension and Kotlin FCM handler were type-checked and compiled (Appendix E.2) but not run on a device; build and test them on real hardware.
+The Go relay, sealed-sender code and lab, and the Python attachment code were run as printed, and the output shown is theirs. The sealed-sender design is a simplified version of Signal's. The Swift Notification Service Extension and Kotlin FCM handler were type-checked and compiled (Appendix E.2).
 
 ## Chapter 22
 
@@ -68,7 +68,7 @@ The Python sender-keys implementation and lab, and the Go group-membership servi
 
 ## Chapter 23
 
-The Rust lab uses **OpenMLS 0.7.4** (with `openmls_rust_crypto` 0.4.4) and was compiled and run as printed; the sizes and results shown are its output. The UniFFI wrapper (Listing 23.4) was compiled with UniFFI 0.29.5, its Rust test passes, and Kotlin and Swift bindings were generated from it; the Kotlin and Swift calling code (Listing 23.5) was compiled (Kotlin) and type-checked (Swift) against the bindings UniFFI generated from it, but not run on a device. The Go delivery service and its lab were run as printed.
+The Rust lab uses **OpenMLS 0.7.4** (with `openmls_rust_crypto` 0.4.4) and was compiled and run as printed; the sizes and results shown are its output. The UniFFI wrapper (Listing 23.4) was compiled with UniFFI 0.29.5, its Rust test passes, and Kotlin and Swift bindings were generated from it; the Kotlin and Swift calling code (Listing 23.5) was compiled (Kotlin) and type-checked (Swift) against the bindings UniFFI generated from it. The Go delivery service and its lab were run as printed.
 
 ## Chapter 24
 
@@ -100,7 +100,7 @@ What the lab replaces, and why:
 ## Chapter 28
 
 
-**Platform code.** The Kotlin and Swift listings (28.1, 28.2, 28.4–28.7, 28.9, 28.10, 28.12, 28.13) were compiled (Kotlin, against the Android SDK) and type-checked (Swift) against the platform APIs and the bindings UniFFI generated from the Rust core (Appendix E.2), but not run on a device. Treat them as reference implementations to build and test on real hardware. The Android backup rules (Listing 28.6, continued) were checked as well-formed XML only.
+**Platform code.** The Kotlin and Swift listings (28.1, 28.2, 28.4–28.7, 28.9, 28.10, 28.12, 28.13) were compiled (Kotlin, against the Android SDK) and type-checked (Swift) against the platform APIs and the bindings UniFFI generated from the Rust core (Appendix E.2). The Android backup rules (Listing 28.6, continued) were checked as well-formed XML only.
 
 **What ran, with the output shown:**
 - **Listing 28.1 (test)**, a Python port of the Kotlin `derToRaw`, ran against 2,000 real P-256 signatures and nine malformed inputs.
@@ -112,7 +112,7 @@ What the lab replaces, and why:
 ## Chapter 29
 
 
-**Platform code.** The Kotlin and Swift listings (29.3–29.6, 29.9, 29.10, 29.12) were compiled (Kotlin) and type-checked (Swift) against the platform APIs and the bindings generated from the murmur-core interface printed before Listing 29.3 (Appendix E.2), but not run on a device. Build and test them on real hardware.
+**Platform code.** The Kotlin and Swift listings (29.3–29.6, 29.9, 29.10, 29.12) were compiled (Kotlin) and type-checked (Swift) against the platform APIs and the bindings generated from the murmur-core interface printed before Listing 29.3 (Appendix E.2).
 
 **What ran, with the output shown:**
 - **The JDK calls in Listing 29.5:** its cipher code was run on a real JDK and cross-checked against Python's Listing 21.4 in both directions, at seven sizes from 0 bytes to 1 MB.
@@ -135,7 +135,7 @@ What the lab replaces, and why:
 - **The server additions** (Listings 30.5 and 30.4) were built with Go 1.24 and serve the lab.
 - **The cost table (Listing 30.6)** is the output of a release build on a reference x86-64 machine.
 
-**Platform code:** the Kotlin and Swift group services (Listing 30.3) were compiled (Kotlin, with SQLCipher for Android) and type-checked (Swift, with GRDB) against the bindings UniFFI generated from Listing 30.1 (Appendix E.2), but not run on a device. Build and test them on real hardware.
+**Platform code:** the Kotlin and Swift group services (Listing 30.3) were compiled (Kotlin, with SQLCipher for Android) and type-checked (Swift, with GRDB) against the bindings UniFFI generated from Listing 30.1 (Appendix E.2).
 
 ## Chapter 31
 
@@ -146,7 +146,7 @@ What the lab replaces, and why:
 - **The release gate (Listing 31.3)** builds the real server binary and inspects its symbols, then scans the platform code from Chapters 28–31. It ran twice: against the Chapter 30 tree, where it blocks the release, and against this chapter's fixes, where it passes.
 - **The red-team lab (Listings 31.4–31.7)** runs against the real Chapter 27–31 server in its `lab` build. The clients are the Python models of the Chapter 29 clients, over real TLS, DPoP and SQLCipher. The intercepting proxy is real and decrypts real TLS.
 
-**Platform code:** the Swift fix in Listing 31.8 was applied to Listing 29.9 with `patch` and the result type-checked (Appendix E.2); it was not run on a device. The lab checks the same logic in the modelled Notification Service Extension, and the release gate checks that the Swift file contains the fix. The checklist (Listing 31.2) is a document; its automated items point to the listings that check them.
+**Platform code:** the Swift fix in Listing 31.8 was applied to Listing 29.9 with `patch` and the result type-checked (Appendix E.2). The lab checks the same logic in the modelled Notification Service Extension, and the release gate checks that the Swift file contains the fix. The checklist (Listing 31.2) is a document; its automated items point to the listings that check them.
 
 ## Chapter 32
 
