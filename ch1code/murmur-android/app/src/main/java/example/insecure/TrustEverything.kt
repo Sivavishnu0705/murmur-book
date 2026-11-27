@@ -13,12 +13,14 @@ import javax.net.ssl.X509TrustManager
 class TrustEverythingManager : X509TrustManager {
 
     // (2) Should throw CertificateException for an untrusted client chain.
-    override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+    override fun checkClientTrusted(chain: Array<X509Certificate>,
+        authType: String) {
         // empty: accepts anything
     }
 
     // (3) Should validate the server chain to a trusted root. Does nothing.
-    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
+    override fun checkServerTrusted(chain: Array<X509Certificate>,
+        authType: String) {
         // empty: accepts anything — including an attacker's self-signed cert
     }
 

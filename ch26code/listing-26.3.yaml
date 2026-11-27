@@ -1,22 +1,27 @@
 # Listing 26.3 — docker-compose.yml: the local Murmur stack (development only).
-# Two networks mirror the production trust boundaries of Fig 26.1: "edge" is what devices reach;
-# "internal" carries mTLS-only service traffic and is not published to the host.
+# Two networks mirror the production trust boundaries of Fig 26.1: "edge" is
+# what devices reach; "internal" carries mTLS-only service traffic and is not
+# published to the host.
 name: murmur-dev
 
 x-service: &service
   restart: unless-stopped
-  read_only: true                       # containers can't modify their own image
+  # containers can't modify their own image
+  read_only: true
   cap_drop: [ALL]
   security_opt: ["no-new-privileges:true"]
   environment: &env
     MURMUR_ENV: dev
-    SSLKEYLOGFILE: ""                   # key logging is OFF unless you opt in per run (§26.6)
+    # key logging is OFF unless you opt in per run (§26.6)
+    SSLKEYLOGFILE: ""
 
 services:
-  pki-init:                             # Ch 4 tool: issues root + intermediates + 30-day leaves once
+  # Ch 4 tool: issues root + intermediates + 30-day leaves once
+  pki-init:
     image: golang:1.24
     working_dir: /src/tools/murmurpki
-    command: ["go", "run", ".", "issue", "-out", "/pki", "-dev-edge-domain", "murmur.test"]
+    command: ["go", "run", ".", "issue", "-out", "/pki", "-dev-edge-domain",
+        "murmur.test"]
     volumes: ["../tools:/src/tools:ro", "pki:/pki"]
     restart: "no"
 
@@ -24,40 +29,53 @@ services:
     <<: *service
     image: postgres:17
     read_only: false
-    environment: { POSTGRES_PASSWORD_FILE: /run/secrets/pg_password, POSTGRES_DB: murmur }
+    environment: { POSTGRES_PASSWORD_FILE: /run/secrets/pg_password,
+        POSTGRES_DB: murmur }
     secrets: [pg_password]
     networks: [internal]
     volumes: ["pgdata:/var/lib/postgresql/data"]
 
-  murmur-auth:                          # OIDC/OAuth AS: PKCE, DPoP, passkeys, step-up (Ch 11–15)
+  # OIDC/OAuth AS: PKCE, DPoP, passkeys, step-up (Ch 11–15)
+  murmur-auth:
     <<: *service
     build: { context: ../server, args: { CMD: murmur-auth } }
-    depends_on: { pki-init: { condition: service_completed_successfully }, postgres: { condition: service_started } }
-    environment: { <<: *env, TLS_CERT: /pki/edge/auth.murmur.test.pem, ISSUER: "https://auth.murmur.test" }
+    depends_on: { pki-init: { condition: service_completed_successfully },
+        postgres: { condition: service_started } }
+    environment: { <<: *env, TLS_CERT: /pki/edge/auth.murmur.test.pem,
+        ISSUER: "https://auth.murmur.test" }
     volumes: ["pki:/pki:ro"]
-    networks: { edge: { aliases: [auth.murmur.test] }, internal: { aliases: [auth.murmur.internal] } }
+    networks: { edge: { aliases: [auth.murmur.test] },
+        internal: { aliases: [auth.murmur.internal] } }
     ports: ["8443:443"]
 
-  murmur-api:                           # resource server: keys, device lists, groups, KT (Ch 18–24)
+  # resource server: keys, device lists, groups, KT (Ch 18–24)
+  murmur-api:
     <<: *service
     build: { context: ../server, args: { CMD: murmur-api } }
     depends_on: [murmur-auth, murmur-relay, murmur-push]
-    environment: { <<: *env, TLS_CERT: /pki/edge/api.murmur.test.pem, MTLS_CERT: /pki/services/murmur-api.pem }
+    environment: { <<: *env, TLS_CERT: /pki/edge/api.murmur.test.pem,
+        MTLS_CERT: /pki/services/murmur-api.pem }
     volumes: ["pki:/pki:ro"]
-    networks: { edge: { aliases: [api.murmur.test] }, internal: { aliases: [api.murmur.internal] } }
+    networks: { edge: { aliases: [api.murmur.test] },
+        internal: { aliases: [api.murmur.internal] } }
     ports: ["8444:443"]
 
-  murmur-relay:                         # envelope store-and-forward, sealed sender, MLS DS (Ch 21, 23)
+  # envelope store-and-forward, sealed sender, MLS DS (Ch 21, 23)
+  murmur-relay:
     <<: *service
     build: { context: ../server, args: { CMD: murmur-relay } }
-    environment: { <<: *env, MTLS_CERT: /pki/services/murmur-relay.pem, ALLOW_CALLERS: "spiffe://murmur.internal/service/murmur-api" }
+    environment: { <<: *env, MTLS_CERT: /pki/services/murmur-relay.pem,
+        ALLOW_CALLERS: "spiffe://murmur.internal/service/murmur-api" }
     volumes: ["pki:/pki:ro"]
-    networks: { internal: { aliases: [relay.murmur.internal] } }   # NOT on edge in this listing; see §26.2
+    # NOT on edge in this listing; see §26.2
+    networks: { internal: { aliases: [relay.murmur.internal] } }
 
-  murmur-push:                          # content-free wakeups to FCM/APNs (Ch 21 §21.4)
+  # content-free wakeups to FCM/APNs (Ch 21 §21.4)
+  murmur-push:
     <<: *service
     build: { context: ../server, args: { CMD: murmur-push } }
-    environment: { <<: *env, MTLS_CERT: /pki/services/murmur-push.pem, PUSH_MODE: log-only }
+    environment: { <<: *env, MTLS_CERT: /pki/services/murmur-push.pem,
+        PUSH_MODE: log-only }
     volumes: ["pki:/pki:ro"]
     networks: { internal: { aliases: [push.murmur.internal] } }
 

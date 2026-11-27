@@ -10,7 +10,8 @@ final class TLSMetricsDelegate: NSObject, URLSessionTaskDelegate {
                     didFinishCollecting metrics: URLSessionTaskMetrics) {
         for t in metrics.transactionMetrics {
             assert(t.negotiatedTLSProtocolVersion == .TLSv13,
-                   "expected TLS 1.3, got \(String(describing: t.negotiatedTLSProtocolVersion))")
+                   "expected TLS 1.3, got " +
+                   "\(String(describing: t.negotiatedTLSProtocolVersion))")
         }
     }
 }

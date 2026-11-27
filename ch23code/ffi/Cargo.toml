@@ -1,0 +1,22 @@
+# Cargo.toml for the Chapter 23 UniFFI wrapper (Listing 23.4): OpenMLS 0.7.4, UniFFI 0.29.5.
+[package]
+name = "murmur-mls-ffi"
+version = "0.23.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "murmur_mls"
+crate-type = ["cdylib", "staticlib", "lib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+openmls = "=0.7.4"
+openmls_rust_crypto = "=0.4.4"
+openmls_basic_credential = "0.4"
+openmls_traits = "0.4"
+uniffi = { version = "=0.29.5", features = ["cli"] }
+thiserror = "2"

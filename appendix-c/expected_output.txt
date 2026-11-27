@@ -1,20 +1,34 @@
 
 ── C.1 KDF labels: HKDF-SHA256(salt=00×32, ikm=000102…1f, info=label, L=32) ──
-  Murmur_X3DH_v1                           813b03706acbdc40fd722b154bd549413b00892eaecbb53de6b4ec52dd59a3f8
-  Murmur_CURVE25519_SHA-256_ML-KEM-1024    740b7ceb67a8f472057509cec86c2c849feb867d0be0886611500c05e1051c32
-  Murmur_DR_Root_v1                        768678eac1528a7b4bbb20fa7709468b172341a96141f4b01427967cfde9da2c
-  Murmur_DR_Msg_v1                         e6bc959f659d3f58e9cca18c0e9f3a5772f86129c1b4f9514b28d1eb886e3266
-  murmur sealed sender v1                  a0144746431581897c53f3a310dd55d5797421ef15a73f57138b2126d3e9d475
-  murmur sender key msg v1                 1b28ba54877ba86b2a7017f07fab334fffd89c15d9e98855fb54de77ea0216dd
+  Murmur_X3DH_v1
+      813b03706acbdc40fd722b154bd549413b00892eaecbb53de6b4ec52dd59a3f8
+  Murmur_CURVE25519_SHA-256_ML-KEM-1024
+      740b7ceb67a8f472057509cec86c2c849feb867d0be0886611500c05e1051c32
+  Murmur_DR_Root_v1
+      768678eac1528a7b4bbb20fa7709468b172341a96141f4b01427967cfde9da2c
+  Murmur_DR_Msg_v1
+      e6bc959f659d3f58e9cca18c0e9f3a5772f86129c1b4f9514b28d1eb886e3266
+  murmur sealed sender v1
+      a0144746431581897c53f3a310dd55d5797421ef15a73f57138b2126d3e9d475
+  murmur sender key msg v1
+      1b28ba54877ba86b2a7017f07fab334fffd89c15d9e98855fb54de77ea0216dd
 
-── C.2 X3DH (info Murmur_X3DH_v1; XEdDSA nonce Z = 42×64; AES-GCM nonce 00×12) ──
-  ik_a   priv 0a×32   pub f77ff4b10788bfdca62ca0bb160d427cf5762d85f2b5cad6807ec9c3febbde09
-  ek_a   priv 0e×32   pub 5855784cb3c8c796d84ac93e8f4a53dab0bb31e80960042cfa87f03a4293b308
-  ik_b   priv 0b×32   pub 73b2d8b76aa9b53660032bc8f5d8bee3a3ae4e3b3a7fd49ade81f7347a34aa68
-  spk_b  priv 5b×32   pub b1d15b513029951e811115ffe62a614706554fb610b8295e889bc3bebdf4370e
-  opk_b  priv 0f×32   pub 7e81e916e3afcdb31ef74d8db923f2ba15b82a1aa6594ea228dcdf27d7b54f6c
-  SPK_B signature   85015158fb07a8039cf528df94afe9fd39085309661cf91ad20dd76695022c4a
-                    3e51b43a0dbb759dd0e3031f5d82a117ca4b5ab732420e4a4b55969cc7acc002
+── C.2 X3DH (info Murmur_X3DH_v1; XEdDSA nonce Z = 42×64; AES-GCM nonce 00×12)
+    ──
+  ik_a   priv 0a×32   pub
+      f77ff4b10788bfdca62ca0bb160d427cf5762d85f2b5cad6807ec9c3febbde09
+  ek_a   priv 0e×32   pub
+      5855784cb3c8c796d84ac93e8f4a53dab0bb31e80960042cfa87f03a4293b308
+  ik_b   priv 0b×32   pub
+      73b2d8b76aa9b53660032bc8f5d8bee3a3ae4e3b3a7fd49ade81f7347a34aa68
+  spk_b  priv 5b×32   pub
+      b1d15b513029951e811115ffe62a614706554fb610b8295e889bc3bebdf4370e
+  opk_b  priv 0f×32   pub
+      7e81e916e3afcdb31ef74d8db923f2ba15b82a1aa6594ea228dcdf27d7b54f6c
+  SPK_B signature
+      85015158fb07a8039cf528df94afe9fd39085309661cf91ad20dd76695022c4a
+                    3e51b43a0dbb759dd0e3031f5d82a117ca4b5ab732420e4a4b55969cc7ac
+                        c002
   [with_opk]
     dh1  20b0d07b34ec3e6516e48745742f5730a6a2fcd830b309e477855e16d0bd9f53
     dh2  7dfd53cc5b3ef570d6d0ef2366a782e17919178649ecc9510e6542f980a4b25f
@@ -31,11 +45,15 @@
 
 ── C.3 PQXDH (info Murmur_CURVE25519_SHA-256_ML-KEM-1024) ──
   ML-KEM-1024 seed        42×64
-  ek (1568 B) SHA-256     dd2e8fe4ffe00e224daab15f6d5f90516754ef13aa25cea525f5d55f520d0137
-  ct (1568 B) SHA-256     e99e406db664ba9391962673066f1ea4de1e41efd66a3ff15e41506d185a6b78
-  SS = Decaps(dk, ct)     489df98a07b8e592d2cd5282cb772810a3ac0bf2fc57b888d4504c43f1ea5a91
+  ek (1568 B) SHA-256
+      dd2e8fe4ffe00e224daab15f6d5f90516754ef13aa25cea525f5d55f520d0137
+  ct (1568 B) SHA-256
+      e99e406db664ba9391962673066f1ea4de1e41efd66a3ff15e41506d185a6b78
+  SS = Decaps(dk, ct)
+      489df98a07b8e592d2cd5282cb772810a3ac0bf2fc57b888d4504c43f1ea5a91
   DH1‖DH2‖DH3‖DH4         from C.2 [with_opk]
-  SK                      03bce268c1665ec4c6ac4a215d571fffcbf6b8d8130d9599d4794bb0a1fd0e92
+  SK
+      03bce268c1665ec4c6ac4a215d571fffcbf6b8d8130d9599d4794bb0a1fd0e92
   ct, in full:
     039bc12f372a0c436ff8347570be1f7073e559191553aa317e8e8905e3e3eace
     c80717cec8b347e9f426786dea94485c1a258ecce6e464ef81d912eed120eb27
@@ -87,37 +105,65 @@
     7dfa7f703b278e00f00dfd1c99f75d25af2dbc8c768c4a16b6139758e7a85c30
     f3920b1cf1fc62e008cebc8e8499b951f285ebf60ece492b9376e00d29aa6708
 
-── C.4 Double Ratchet (SK 00..1f; ratchet keys 20×32, 21×32, … in generation order) ──
-  AD 05aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa05bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+── C.4 Double Ratchet (SK 00..1f; ratchet keys 20×32, 21×32, … in generation
+    order) ──
+  AD
+      05aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa05bbbbbb
+      bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
   Bob SPK priv 5b×32
-  1. A  header 06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000000000
+  1. A  header
+      06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000
+      000000
      ct 3df99cef02cd305fa5914a6d2793522033d6
-     RK after receive da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9
-  2. A  header 06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000000001
+     RK after receive
+         da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9
+  2. A  header
+      06453fcd9cef5a1f53acc4f942104c0c8e9e27d5c7b37f5507cdcd16281059630000000000
+      000001
      ct 5adb21271e55b0e3e09c7b8b65df51128bee
-     RK after receive da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9
-  3. B  header 7d34a4815fa6b982535e60af3bd9b49556816080f1641ff81d2b7c8ae8268a440000000000000000
+     RK after receive
+         da37a753aa6fff46aa9affa91170e3d1372df3b5e340fd022104ce5e99bf58c9
+  3. B  header
+      7d34a4815fa6b982535e60af3bd9b49556816080f1641ff81d2b7c8ae8268a440000000000
+      000000
      ct 56b0b0df2bce1f3a04200cbcdef352260d99
-     RK after receive 09b2880bc7ac50f2fc49e1a8b75bd0a066558cc842fef7aefe965ecd47dee921
-  4. A  header 0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f200000000200000000
+     RK after receive
+         09b2880bc7ac50f2fc49e1a8b75bd0a066558cc842fef7aefe965ecd47dee921
+  4. A  header
+      0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f200000000200
+      000000
      ct c24b9eb62b0564a642f0aab866b101f8f8ff
-     RK after receive a54369b310021a0fcb652784e74e2d841dd6b32c977182727809f89773e0dfb8
-  5. B  header 9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100000000
+     RK after receive
+         a54369b310021a0fcb652784e74e2d841dd6b32c977182727809f89773e0dfb8
+  5. B  header
+      9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100
+      000000
      ct ca3d624eb46b4cdc90cce923313bfef7a74a
-     RK after receive 65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d
-  6. B  header 9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100000001
+     RK after receive
+         65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d
+  6. B  header
+      9a4503a98ab10fe8d354c9c42cbd0c9d7944f52e7d14d8ea59775e7dc9e3bf4b0000000100
+      000001
      ct e5fc44ee36acbf88e88ecf15e0c10f6a7f33
-     RK after receive 65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d
+     RK after receive
+         65ce19ffc97cbe162a16f01c8ae67fa62ee513b4707fa12931dca49e2489c26d
 
 ── C.5 Safety number (5,200 × SHA-512, version 0x0000) ──
-  alice IK = ik_a.pub, id 'alice@murmur.example';  bob IK = ik_b.pub, id 'bob@murmur.example'
-  displayed  48682 68766 85687 29261 75899 04949 89547 64508 12883 82609 90614 77917
-  QR payload 00c5df6448aa764323ecbeb12b40e937bb56ae042dd017a34e1b752e752d951ae2900a2073abf204e15f5c3e76c0b433c96ba1a6d103e53a14364ac5fd16dd966a
+  alice IK = ik_a.pub, id 'alice@murmur.example';  bob IK = ik_b.pub, id
+      'bob@murmur.example'
+  displayed  48682 68766 85687 29261 75899 04949 89547 64508 12883 82609 90614
+      77917
+  QR payload
+      00c5df6448aa764323ecbeb12b40e937bb56ae042dd017a34e1b752e752d951ae2900a2073
+      abf204e15f5c3e76c0b433c96ba1a6d103e53a14364ac5fd16dd966a
 
 ── C.6 Encodings ──
-  Envelope(version=1, type=RATCHET_MESSAGE, recipient_device='dev-8f2c1a', content=00..0f)
-    protobuf  080110021a0a6465762d3866326331612210000102030405060708090a0b0c0d0e0f
-  device list: account 'alice', version 2, one device (id 'dev-0001', IK = ik_a.pub, name 'Pixel', added 1767225600)
+  Envelope(version=1, type=RATCHET_MESSAGE, recipient_device='dev-8f2c1a',
+      content=00..0f)
+    protobuf
+        080110021a0a6465762d3866326331612210000102030405060708090a0b0c0d0e0f
+  device list: account 'alice', version 2, one device (id 'dev-0001', IK =
+      ik_a.pub, name 'Pixel', added 1767225600)
     bytes     000000156d75726d757220646576696365206c69737420763100000005616c69
               6365000000000000000200000001000000086465762d30303031f77ff4b10788
               bfdca62ca0bb160d427cf5762d85f2b5cad6807ec9c3febbde09000000055069

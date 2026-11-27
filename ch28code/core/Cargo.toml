@@ -1,0 +1,22 @@
+# Cargo.toml for murmur-core as of Chapter 28 (Listing 28.3): x25519-dalek 2, zeroize,
+# UniFFI 0.29. Test: cargo test
+[package]
+name = "murmur-core"
+version = "0.28.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "murmur_core"
+crate-type = ["cdylib", "staticlib", "lib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
+zeroize = "1"
+uniffi = { version = "=0.29.5", features = ["cli"] }
+thiserror = "2"

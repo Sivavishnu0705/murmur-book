@@ -38,6 +38,7 @@ func demo() throws {
     let bobKey = try deriveKey(mine: bob, theirs: alice.publicKey,
                                initiatorPub: aPub, responderPub: bPub)
     let box = try ChaChaPoly.SealedBox(combined: wire)
-    let plaintext = try ChaChaPoly.open(box, using: bobKey, authenticating: header)
+    let plaintext = try ChaChaPoly.open(box, using: bobKey,
+        authenticating: header)
     print(String(decoding: plaintext, as: UTF8.self))   // "Are you free at 7?"
 }

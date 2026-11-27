@@ -3,7 +3,8 @@
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="false">api.murmur.test</domain>
         <trust-anchors>
-            <!-- The lab's test root and nothing else: no "system", no "user". -->
+            <!-- The lab's test root and nothing else: no "system",
+                no "user". -->
             <certificates src="@raw/test_root" />
         </trust-anchors>
     </domain-config>

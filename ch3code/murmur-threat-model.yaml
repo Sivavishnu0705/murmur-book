@@ -1,4 +1,5 @@
-# Listing 3.1 — Murmur threat model (v0 excerpt). One file, versioned with the code.
+# Listing 3.1 — Murmur threat model (v0 excerpt). One file, versioned with the
+# code.
 meta:
   system: murmur
   version: v0
@@ -80,5 +81,6 @@ threats:
     impact: 4
     status: open
     violates: [G-1]
-    mitigation: Content-free wake-up pushes; decrypt on device in NSE / FCM handler.
+    mitigation: >-
+      Content-free wake-up pushes; decrypt on device in NSE / FCM handler.
     chapters: [ch21, ch29]

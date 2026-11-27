@@ -40,7 +40,8 @@ def verify(Q, msg: bytes, sig) -> bool:
 
 d = secrets.randbelow(n - 1) + 1          # victim's private key
 Q = mul(d, G)
-k = secrets.randbelow(n - 1) + 1          # ⚠️ the bug: the same k for two signatures
+# ⚠️ the bug: the same k for two signatures
+k = secrets.randbelow(n - 1) + 1
 
 m1, m2 = b"approve device phone-1", b"approve device tablet-2"
 r1, s1 = sign(d, m1, k); r2, s2 = sign(d, m2, k)
@@ -53,4 +54,5 @@ d_rec = (s1 * k_rec - h(m1)) * pow(r1, -1, n) % n
 assert d_rec == d
 print("recovered private key matches:", d_rec == d)
 forged = sign(d_rec, b"approve device ATTACKER", secrets.randbelow(n - 1) + 1)
-print("forged signature verifies:", verify(Q, b"approve device ATTACKER", forged))
+print("forged signature verifies:", verify(Q, b"approve device ATTACKER",
+    forged))

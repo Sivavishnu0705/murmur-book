@@ -1,4 +1,5 @@
-// MurmurPushService.kt — data message {"v":"1"}: no sender, no text, no conversation id.
+// MurmurPushService.kt — data message {"v":"1"}: no sender, no text, no
+// conversation id.
 import android.app.NotificationManager
 import androidx.core.app.NotificationCompat
 import androidx.work.*
@@ -7,26 +8,34 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MurmurPushService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
-        if (msg.data["v"] != "1") return                           // ignore anything unexpected
-        // Fetching + decrypting may exceed onMessageReceived's window: hand off to an expedited job.
-        WorkManager.getInstance(this).enqueueUniqueWork("fetch-messages", ExistingWorkPolicy.APPEND_OR_REPLACE,
+        // ignore anything unexpected
+        if (msg.data["v"] != "1") return
+        // Fetching + decrypting may exceed onMessageReceived's window: hand off
+        // to an expedited job.
+        WorkManager.getInstance(this).enqueueUniqueWork("fetch-messages",
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
             OneTimeWorkRequestBuilder<FetchWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .setExpedited(
+                OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build())
     }
 
     override fun onNewToken(token: String) {
-        MurmurCore.get(this).registerPushToken(token)               // over the authenticated session
+        // over the authenticated session
+        MurmurCore.get(this).registerPushToken(token)
     }
 }
 
-class FetchWorker(ctx: android.content.Context, p: WorkerParameters) : CoroutineWorker(ctx, p) {
+class FetchWorker(ctx: android.content.Context,
+    p: WorkerParameters) : CoroutineWorker(ctx, p) {
     override suspend fun doWork(): Result {
         val core = MurmurCore.get(applicationContext)
-        val envelopes = runCatching { core.relay.fetchQueued(limit = 20) }.getOrElse { return Result.retry() }
+        val envelopes = runCatching { core.relay.fetchQueued(
+            limit = 20) }.getOrElse { return Result.retry() }
         for (env in envelopes) {
-            // unseal → verify sender cert → Double Ratchet decrypt + persist in one transaction
-            // (Listing 19.3); ack to the relay only after commit.
+            // unseal → verify sender cert → Double Ratchet decrypt + persist in
+            // one transaction (Listing 19.3); ack to the relay only after
+            // commit.
             val m = core.receive(env) ?: continue
             if (m.isUserVisible) notify(m)
         }
@@ -36,13 +45,20 @@ class FetchWorker(ctx: android.content.Context, p: WorkerParameters) : Coroutine
     private fun notify(m: DecryptedMessage) {
         val n = NotificationCompat.Builder(applicationContext, "messages")
             .setSmallIcon(R.drawable.ic_murmur)
-            .setContentTitle(m.senderDisplayName)                   // composed on device
-            .setContentText(if (m.previewsEnabled) m.previewText else "New message")
-            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)   // lock screen shows a redacted version
-            .setPublicVersion(NotificationCompat.Builder(applicationContext, "messages")
-                .setSmallIcon(R.drawable.ic_murmur).setContentTitle("Murmur").setContentText("New message").build())
+            // composed on device
+            .setContentTitle(m.senderDisplayName)
+            .setContentText(if (
+                m.previewsEnabled) m.previewText else "New message")
+            // lock screen shows a redacted version
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(NotificationCompat.Builder(applicationContext,
+                "messages")
+                .setSmallIcon(R.drawable.ic_murmur).setContentTitle(
+                "Murmur").setContentText("New message").build())
             .setGroup(m.conversationId)
             .build()
-        applicationContext.getSystemService(NotificationManager::class.java).notify(m.conversationId.hashCode(), n)
+        applicationContext.getSystemService(
+            NotificationManager::class.java).notify(m.conversationId.hashCode(),
+            n)
     }
 }

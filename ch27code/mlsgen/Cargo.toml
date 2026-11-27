@@ -1,0 +1,13 @@
+[package]
+name = "mlsgen"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Generates ch27code/server/mls_vectors.json: real OpenMLS 0.7 messages for the Ch 27 selftest and lab"
+
+[dependencies]
+openmls = "=0.7.4"
+openmls_rust_crypto = "=0.4.4"
+openmls_basic_credential = "0.4"
+openmls_traits = "0.4"
+hex = "0.4"

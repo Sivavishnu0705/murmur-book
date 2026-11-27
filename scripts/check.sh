@@ -7,7 +7,7 @@ cd "$ROOT"
 fail=0; pass=0
 run() {  # run DIR CMD...   (prints one line per check)
   local dir=$1; shift
-  if (cd "$dir" && timeout 300 "$@" >/tmp/murmur-check.log 2>&1); then
+  if (cd "$dir" && timeout 900 "$@" >/tmp/murmur-check.log 2>&1); then
     pass=$((pass+1)); echo "ok    $dir: $*"
   else
     fail=$((fail+1)); echo "FAIL  $dir: $*"; tail -5 /tmp/murmur-check.log | sed 's/^/      /'
@@ -47,13 +47,49 @@ echo "== Appendix C: regenerate the test vectors; output must match the book exa
 run appendix-c sh -c "python3 gen_vectors.py | diff - expected_output.txt"   # byte-identical to the book
 
 echo "== Go: every program directory must build and pass go vet"
-# Directories that need code the book describes but does not print (see README, "Known gaps").
-SKIP="./ch14code/lab ./ch14code/library ./ch27code/server ./ch28code/server ./ch29code/server ./ch30code/server"
-for d in $(find . -name go.mod -printf '%h\n' | sort); do
-  case " $SKIP " in *" $d "*) echo "skip  $d (incomplete in the manuscript)"; continue;; esac
+for d in $(find . -name go.mod -not -path '*/target/*' -printf '%h\n' | sort); do
+  # A module with external dependencies but no go.sum yet: resolve it (checksums verified
+  # against sum.golang.org). Commit the resulting go.sum.
+  if grep -q '^require' "$d/go.mod" && [ ! -f "$d/go.sum" ]; then run "$d" go mod tidy; fi
   run "$d" go vet .
   grep -lq 'go:build serve' "$d"/*.go 2>/dev/null && run "$d" go vet -tags serve .
+  grep -lq 'go:build lab' "$d"/*.go 2>/dev/null && run "$d" go vet -tags lab .
 done
+
+echo "== Labs that need the Go server (Chapters 14, 27–29)"
+BIN=$(mktemp -d)
+run ch14code/lab go run .
+run ch27code/server go run . -selftest
+for c in 27 28 29; do run "ch${c}code/server" go build -o "$BIN/murmur-lab$c" .; done
+run ch27code/lab python3 lab.py "$BIN/murmur-lab27"
+run ch28code/client python3 lab.py "$BIN/murmur-lab28"
+run ch29code/client python3 lab.py "$BIN/murmur-lab29"
+
+echo "== Chapter 31: release build refuses to start; lab build has the malicious-server mode"
+run ch31code/server sh -c "go build -o $BIN/murmur-server . && { $BIN/murmur-server; test \$? -eq 2; }"
+run ch31code/server go build -tags lab -o "$BIN/murmur-lab31" .
+run ch31code/rotation go run .
+
+if command -v cargo >/dev/null 2>&1; then
+  echo "== Rust: every crate builds; the Chapter 30 core drives the Chapter 30 lab and Chapter 31"
+  export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$ROOT/target}"
+  for d in ch17code/murmur-core ch23code/ffi ch23code/mls_lab ch26code/core ch27code/mlsgen ch28code/core; do
+    run "$d" cargo build --release --quiet
+  done
+  run ch30code/core sh -c "cargo build --release --quiet && cargo run --release --quiet --bin uniffi-bindgen -- \
+    generate --library \"\$CARGO_TARGET_DIR/release/libmurmur_groups.so\" --language python --out-dir py \
+    && cp \"\$CARGO_TARGET_DIR/release/libmurmur_groups.so\" py/"
+  run ch30code/server go build -o "$BIN/murmur-lab30" .
+  run ch30code/client python3 lab.py "$BIN/murmur-lab30"
+  run ch31code/redteam python3 redteam.py "$BIN/murmur-lab31"
+  # Release gate (Listing 31.3): the Chapter 30 tree is blocked; Chapter 31's fixes pass.
+  run . sh -c "! python3 ch31code/release_gate.py ch30code/server ch29code/ios >/dev/null"
+  run . sh -c "T=\$(mktemp -d) && cp ch29code/ios/NotificationService.swift \$T/ \
+    && patch -s -d \$T NotificationService.swift < ch31code/listing-31.8.diff \
+    && python3 ch31code/release_gate.py ch31code/server \$T"
+else
+  echo "skip  Rust crates, Chapter 30 lab and Chapter 31 red team (cargo not installed)"
+fi
 
 echo
 echo "passed: $pass   failed: $fail"

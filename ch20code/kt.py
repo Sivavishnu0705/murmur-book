@@ -1,9 +1,10 @@
 # kt.py
-"""Listing 20.4 — Python: a minimal key-transparency log (concept only). Entries bind an
-account to its AIK and device-list hash; the server publishes signed tree heads (STH);
-clients verify inclusion proofs; owners monitor their own entries; clients gossip STHs to
-detect a server that shows different users different logs (split view). Hashing follows
-RFC 9162 (Certificate Transparency v2): leaf = H(0x00 ‖ d), node = H(0x01 ‖ l ‖ r)."""
+"""Listing 20.4 — Python: a minimal key-transparency log (concept only). Entries
+bind an account to its AIK and device-list hash; the server publishes signed
+tree heads (STH); clients verify inclusion proofs; owners monitor their own
+entries; clients gossip STHs to detect a server that shows different users
+different logs (split view). Hashing follows RFC 9162 (Certificate Transparency
+v2): leaf = H(0x00 ‖ d), node = H(0x01 ‖ l ‖ r)."""
 import hashlib
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.exceptions import InvalidSignature
@@ -14,10 +15,12 @@ node = lambda l, r: H(b"\x01" + l + r)
 
 def root(leaves):
     if len(leaves) == 1: return leaves[0]
-    k = 1 << (len(leaves) - 1).bit_length() - 1           # largest power of two < n
+    # largest power of two < n
+    k = 1 << (len(leaves) - 1).bit_length() - 1
     return node(root(leaves[:k]), root(leaves[k:]))
 
-def proof(leaves, i):                                       # audit path for leaf i
+# audit path for leaf i
+def proof(leaves, i):
     if len(leaves) == 1: return []
     k = 1 << (len(leaves) - 1).bit_length() - 1
     return (proof(leaves[:k], i) + [root(leaves[k:])] if i < k
@@ -48,7 +51,8 @@ class Log:
         return {"size": len(e), "root": r, "sig": self.sk.sign(msg)}
     def lookup(self, account, entries=None):
         e = entries if entries is not None else self.entries
-        i = max(j for j, x in enumerate(e) if x.startswith(account.encode() + b"|"))
+        i = max(j for j,
+            x in enumerate(e) if x.startswith(account.encode() + b"|"))
         return e[i], i, proof([leaf(x) for x in e], i)
 
 def client_check(log_pk, sth, entry, i, path):
@@ -64,17 +68,32 @@ if __name__ == "__main__":
 
     print("── Lookup with inclusion proof ──")
     sth = log.sth(); e, i, path = log.lookup("bob")
-    print(f"  Alice looks up bob: {e.decode()}  (leaf {i} of {sth['size']}, proof of {len(path)} hashes)")
-    print(f"  inclusion proof + signed tree head verify: {client_check(log.pk, sth, e, i, path)}")
+    print(
+        f"  Alice looks up bob: {e.decode()}  (leaf {i} of {sth['size']}, "
+        f"proof of {len(path)} hashes)")
+    print(
+        f"  inclusion proof + signed tree head verify: "
+        f"{client_check(log.pk, sth, e, i, path)}")
     tampered = e.replace(b"aikBOB", b"aikMALLORY")
-    print(f"  server returns a different key with the same proof: {client_check(log.pk, sth, tampered, i, path)}")
+    print(
+        f"  server returns a different key with the same proof: "
+        f"{client_check(log.pk, sth, tampered, i, path)}")
 
-    print("── Split view: the server shows Alice a log where bob's key is Mallory's ──")
+    print(
+        "── Split view: the server shows Alice a log where bob's key is "
+        "Mallory's ──")
     fake = list(log.entries); fake[i] = b"bob|aikMALLORY|dlMALLORY"
     sth_alice = log.sth(fake); e2, i2, p2 = log.lookup("bob", fake)
-    print(f"  Alice's view verifies on its own: {client_check(log.pk, sth_alice, e2, i2, p2)}  → {e2.decode()}")
-    sth_bob = log.sth()                                      # Bob monitors his own entry in the real log
-    print(f"  Bob (monitoring) sees his real key in his view: {log.lookup('bob')[0].decode()}")
+    print(
+        f"  Alice's view verifies on its own: "
+        f"{client_check(log.pk, sth_alice, e2, i2, p2)}  → {e2.decode()}")
+    # Bob monitors his own entry in the real log
+    sth_bob = log.sth()
+    print(
+        f"  Bob (monitoring) sees his real key in his view: "
+        f"{log.lookup('bob')[0].decode()}")
     same_size = sth_alice["size"] == sth_bob["size"]
-    print(f"  gossip: same size {same_size}, same root {sth_alice['root'] == sth_bob['root']} "
-          f"→ two signed, conflicting tree heads = PROOF the server equivocated")
+    print(
+        f"  gossip: same size {same_size}, same root "
+        f"{sth_alice['root'] == sth_bob['root']} "
+        f"→ two signed, conflicting tree heads = PROOF the server equivocated")

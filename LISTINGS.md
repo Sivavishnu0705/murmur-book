@@ -77,7 +77,7 @@ Every code listing in the book, and where it lives in this repository.
 | 1 | 13.5 | Go: lab driver for stolen-token and stolen-proof attacks | `ch13code/lab/main.go` |
 | 1 | 14.1 | Kotlin: Credential Manager create/get passkey | `ch14code/android/Passkeys.kt` |
 | 1 | 14.2 | Swift: passkey registration and assertion | `ch14code/ios/listing-14.2.swift` |
-| 1 | 14.3 | Go: WebAuthn verification using a maintained library (annotated) | `ch14code/lab/passkeys.go` |
+| 1 | 14.3 | Go: WebAuthn verification using a maintained library (annotated) | `ch14code/library/passkeys.go` |
 | 1 | 14.4 | Go: the same checks with the standard library | `ch14code/lab/verify.go` |
 | 1 | 14.5 | Go: lab driver for passkey registration, sign-in and phishing attempts | `ch14code/lab/main.go` |
 | 1 | 15.1 | Kotlin/Swift: handling forced logout via push and 401 responses | `ch15code/android/SessionGuard.kt`<br>`ch15code/ios/SessionGuard.swift` |
@@ -188,7 +188,7 @@ Every code listing in the book, and where it lives in this repository.
 | 2 | 30.5 | Go: DS endpoints used by groups | `ch30code/server/mls.go` |
 | 2 | 30.6 | Rust: MLS cost by group size | `ch30code/core/src/perf.rs` |
 | 2 | 30.7 | Python: lab driver | `ch30code/client/lab.py` |
-| 2 | 31.1 | Go: key rotation job for token signing keys, with JWKS overlap | `ch31code/server/rotation.go`<br>`ch31code/server/main.go` |
+| 2 | 31.1 | Go: key rotation job for token signing keys, with JWKS overlap | `ch31code/rotation/rotation.go`<br>`ch31code/rotation/main.go` |
 | 2 | 31.2 | Markdown: release checklist | `ch31code/listing-31.2.md` |
 | 2 | 31.3 | Python: the release gate | `ch31code/release_gate.py` |
 | 2 | 31.4 | Go: the lab's malicious-server mode | `ch31code/server/evil.go` |

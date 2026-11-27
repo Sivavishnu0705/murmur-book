@@ -1,26 +1,28 @@
 --- Listing 29.9 (Ch 29)
 +++ Listing 31.8 (fixed)
-@@ -10,4 +10,6 @@
-
+@@ -12,4 +12,7 @@
+ 
  final class NotificationService: UNNotificationServiceExtension {
 +    static let appName = "Murmur"
-+    static let placeholder = NSLocalizedString("New message", comment: "notification placeholder")
++    static let placeholder = NSLocalizedString("New message",
++        comment: "notification placeholder")
      private var handler: ((UNNotificationContent) -> Void)?
      private var best: UNMutableNotificationContent?
-@@ -20,4 +22,9 @@
-         // The push carried only {"aps":{"alert":{"title":"Murmur","body":"New message"},…},"v":1}.
-         let content = (request.content.mutableCopy() as? UNMutableNotificationContent) ?? UNMutableNotificationContent()
-+        // RT-6: the push's text came from the server, so NEVER show it. Start from local constants;
-+        // only a locally decrypted message may replace them.
+@@ -26,4 +29,10 @@
+             request.content.mutableCopy() as? UNMutableNotificationContent) ??
+             UNMutableNotificationContent()
++        // RT-6: the push's text came from the server, so NEVER show it. Start
++        // from local constants; only a locally decrypted message may replace
++        // them.
 +        content.title = Self.appName
 +        content.body = Self.placeholder
 +        content.subtitle = ""
          best = content
          work = Task {
-@@ -37,5 +44,5 @@
-                 if case let .message(sender, text, _)? = results.last(where: { if case .message = $0 { return true }; return false }) {
-                     content.title = Contacts.displayName(sender)          // from app.db, also in the App Group
--                    content.body = Preferences.showPreviews ? text : "New message"
-+                    content.body = Preferences.showPreviews ? text : Self.placeholder
+@@ -55,5 +64,5 @@
+                     content.title = Contacts.displayName(sender)
+                     content.body =
+-                        Preferences.showPreviews ? text : "New message"
++                        Preferences.showPreviews ? text : Self.placeholder
                      content.threadIdentifier = sender
                  }

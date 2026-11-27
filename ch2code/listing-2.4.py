@@ -1,8 +1,10 @@
 # Listing 2.4 — X25519 key agreement
-from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey, X25519PublicKey
+from cryptography.hazmat.primitives.asymmetric.x25519 import \
+    X25519PrivateKey, X25519PublicKey
 from cryptography.hazmat.primitives import serialization
 
-RAW = dict(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+RAW = dict(encoding=serialization.Encoding.Raw,
+    format=serialization.PublicFormat.Raw)
 
 def x25519_shared(priv: X25519PrivateKey, peer_pub_raw: bytes) -> bytes:
     shared = priv.exchange(X25519PublicKey.from_public_bytes(peer_pub_raw))
@@ -26,5 +28,6 @@ if __name__ == "__main__":
     b = X25519PrivateKey.from_private_bytes(bytes.fromhex(
         "5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb"))
     k = x25519_shared(a, b.public_key().public_bytes(**RAW))
-    assert k.hex() == "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"
+    assert k.hex() == \
+        "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742"
     print("RFC 7748 test vector: OK")

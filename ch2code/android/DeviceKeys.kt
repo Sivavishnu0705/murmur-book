@@ -1,4 +1,5 @@
-// DeviceKeys.kt — hardware-backed P-256 signing key (used later for DPoP / attestation)
+// DeviceKeys.kt — hardware-backed P-256 signing key (used later for DPoP /
+// attestation)
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -23,7 +24,8 @@ object DeviceKeys {
             return KeyPair(it.certificate.publicKey, it.privateKey)
         }
         val wantStrongBox = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-            context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
+            context.packageManager.hasSystemFeature(
+                PackageManager.FEATURE_STRONGBOX_KEYSTORE)
         return try {
             generate(strongBox = wantStrongBox)
         } catch (e: StrongBoxUnavailableException) {
@@ -32,13 +34,18 @@ object DeviceKeys {
     }
 
     private fun generate(strongBox: Boolean): KeyPair {
-        val spec = KeyGenParameterSpec.Builder(ALIAS, KeyProperties.PURPOSE_SIGN)
-            .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))   // P-256
-            .setDigests(KeyProperties.DIGEST_SHA256)                       // ES256 only
-            .apply { if (strongBox && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+        val spec = KeyGenParameterSpec.Builder(ALIAS,
+            KeyProperties.PURPOSE_SIGN)
+            // P-256
+            .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
+            // ES256 only
+            .setDigests(KeyProperties.DIGEST_SHA256)
+            .apply { if (
+                strongBox && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                          setIsStrongBoxBacked(true) }
             .build()
-        return KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore")
+        return KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC,
+            "AndroidKeyStore")
             .apply { initialize(spec) }
             .generateKeyPair()
     }
@@ -46,12 +53,15 @@ object DeviceKeys {
     /** Where does the key actually live? Log this; never assume. (API 31+) */
     fun securityLevel(privateKey: PrivateKey): Int? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val factory = KeyFactory.getInstance(privateKey.algorithm, "AndroidKeyStore")
+            val factory = KeyFactory.getInstance(privateKey.algorithm,
+                "AndroidKeyStore")
             factory.getKeySpec(privateKey, KeyInfo::class.java).securityLevel
-            // KeyProperties.SECURITY_LEVEL_STRONGBOX / _TRUSTED_ENVIRONMENT / _SOFTWARE
+            // KeyProperties.SECURITY_LEVEL_STRONGBOX / _TRUSTED_ENVIRONMENT /
+            // _SOFTWARE
         } else null
 
-    /** Sign with the hardware key. Output is DER-encoded ECDSA (convert to raw r‖s for JWS). */
+    /** Sign with the hardware key. Output is DER-encoded ECDSA (convert to raw
+     * r‖s for JWS). */
     fun sign(privateKey: PrivateKey, data: ByteArray): ByteArray =
         Signature.getInstance("SHA256withECDSA").run {
             initSign(privateKey)

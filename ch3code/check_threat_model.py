@@ -15,7 +15,8 @@ def check(tm):
     ids = {k: {x["id"] for x in tm.get(k, [])}
            for k in ("assets", "adversaries", "trust_boundaries", "goals")}
     for g in tm.get("goals", []):
-        for field in ("asset", "adversary", "property", "assumptions", "out_of_scope"):
+        for field in ("asset", "adversary", "property", "assumptions",
+            "out_of_scope"):
             if field not in g:
                 errors.append(f"{g['id']}: missing '{field}'")
         if g.get("asset") not in ids["assets"]:
@@ -55,4 +56,6 @@ if __name__ == "__main__":
         sys.exit(1)
     print(f"{'risk':>4}  {'id':<5} {'status':<10} title")
     for t in ranked(tm):
-        print(f"{t['likelihood'] * t['impact']:>4}  {t['id']:<5} {t['status']:<10} {t['title']}")
+        print(
+            f"{t['likelihood'] * t['impact']:>4}  {t['id']:<5} "
+            f"{t['status']:<10} {t['title']}")

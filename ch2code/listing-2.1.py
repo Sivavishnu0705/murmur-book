@@ -11,7 +11,8 @@ def hkdf_extract(salt: bytes, ikm: bytes) -> bytes:
 
 def hkdf_expand(prk: bytes, info: bytes, length: int) -> bytes:
     """HKDF-Expand using the library (avoids hand-rolling the counter loop)."""
-    return HKDFExpand(algorithm=hashes.SHA256(), length=length, info=info).derive(prk)
+    return HKDFExpand(algorithm=hashes.SHA256(), length=length,
+        info=info).derive(prk)
 
 def label(purpose: str) -> bytes:
     # One namespace for every Murmur label: "murmur/<version>/<purpose>"
@@ -24,13 +25,16 @@ if __name__ == "__main__":
     info = bytes.fromhex("f0f1f2f3f4f5f6f7f8f9")
     prk = hkdf_extract(salt, ikm)
     okm = hkdf_expand(prk, info, 42)
-    assert prk.hex() == "077709362c2e32df0ddc3f0dc47bba6390b6c73bb50f9c3122ec844ad7c2b3e5"
-    assert okm.hex() == ("3cb25f25faacd57a90434f64d0362f2a2d2d0a90cf1a5a4c5db02d56"
-                         "ecc4c5bf34007208d5b887185865")
+    assert prk.hex() == \
+        "077709362c2e32df0ddc3f0dc47bba6390b6c73bb50f9c3122ec844ad7c2b3e5"
+    assert okm.hex() == (
+        "3cb25f25faacd57a90434f64d0362f2a2d2d0a90cf1a5a4c5db02d56"
+        "ecc4c5bf34007208d5b887185865")
     print("RFC 5869 test case 1: OK")
 
     # Domain separation: one shared secret, several independent keys.
-    shared_secret = bytes.fromhex("4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742")
+    shared_secret = bytes.fromhex(
+        "4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742")
     prk = hkdf_extract(salt=b"murmur-session-salt", ikm=shared_secret)
     k_send   = hkdf_expand(prk, label("chat/send-key"), 32)
     k_recv   = hkdf_expand(prk, label("chat/recv-key"), 32)

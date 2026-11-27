@@ -1,18 +1,22 @@
-# Listing 2.13 — ⚠️ INSECURE: "optimizing" the envelope by caching the ephemeral key
+# Listing 2.13 — ⚠️ INSECURE: "optimizing" the envelope by caching the ephemeral
+# key
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 from envelope import seal, open_, _pub
 
 bob = X25519PrivateKey.generate()
 B = _pub(bob)
 
-CACHED_EPHEMERAL = X25519PrivateKey.generate()   # ⚠️ "saves an X25519 op per message"
+# ⚠️ "saves an X25519 op per message"
+CACHED_EPHEMERAL = X25519PrivateKey.generate()
 def seal_buggy(pub: bytes, pt: bytes) -> bytes:
     return seal(pub, pt, ephemeral=CACHED_EPHEMERAL)
 
 m1 = b"My PIN for the shared account is 4417"
-m2 = b"Hi Bob! Lunch tomorrow? Bring the doc"   # attacker-influenced or guessable
+# attacker-influenced or guessable
+m2 = b"Hi Bob! Lunch tomorrow? Bring the doc"
 env1, env2 = seal_buggy(B, m1), seal_buggy(B, m2)
-assert open_(bob, env1) == m1 and open_(bob, env2) == m2   # functional tests pass!
+# functional tests pass!
+assert open_(bob, env1) == m1 and open_(bob, env2) == m2
 
 # Attacker view: both envelopes carry the same E -> same key and nonce.
 assert env1[1:33] == env2[1:33]

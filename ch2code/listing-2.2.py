@@ -3,14 +3,17 @@ import os, json
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
 
-def seal(key: bytes, plaintext: bytes, header: dict) -> tuple[bytes, bytes, bytes]:
+def seal(key: bytes, plaintext: bytes, header: dict) -> tuple[bytes, bytes,
+    bytes]:
     aad = json.dumps(header, sort_keys=True, separators=(",", ":")).encode()
     nonce = os.urandom(12)                       # 96-bit random nonce
-    ct = AESGCM(key).encrypt(nonce, plaintext, aad)   # ciphertext || 16-byte tag
+    # ciphertext || 16-byte tag
+    ct = AESGCM(key).encrypt(nonce, plaintext, aad)
     return nonce, ct, aad
 
 def open_(key: bytes, nonce: bytes, ct: bytes, aad: bytes) -> bytes:
-    return AESGCM(key).decrypt(nonce, ct, aad)  # raises InvalidTag on any change
+    # raises InvalidTag on any change
+    return AESGCM(key).decrypt(nonce, ct, aad)
 
 if __name__ == "__main__":
     key = AESGCM.generate_key(bit_length=256)
@@ -24,7 +27,8 @@ if __name__ == "__main__":
     try: open_(key, nonce, bytes(tampered), aad)
     except InvalidTag: print("tampered ciphertext: rejected")
 
-    # 2. Change the header (AAD) -> rejected, though the header was never encrypted.
+    # 2. Change the header (AAD) -> rejected, though the header was never
+    # encrypted.
     evil = json.dumps({**header, "to": "mallory"}, sort_keys=True,
                       separators=(",", ":")).encode()
     try: open_(key, nonce, ct, evil)

@@ -1,9 +1,14 @@
-<!-- Listing 28.6 (continued) — AndroidManifest.xml attributes and res/xml rules.
+<!-- Listing 28.6 (
+    continued) — AndroidManifest.xml attributes and res/xml rules.
      <application android:allowBackup="false"
-                  android:fullBackupContent="@xml/backup_rules_legacy"        (Android ≤ 11)
-                  android:dataExtractionRules="@xml/data_extraction_rules">   (Android 12+)
-     allowBackup="false" alone is not enough on Android 12+ for device-to-device transfer,
-     which follows dataExtractionRules; both are set. Everything Murmur keeps is in
+                  android:fullBackupContent="@xml/backup_rules_legacy"        (
+                      Android ≤ 11)
+                  android:dataExtractionRules="@xml/data_extraction_rules">   (
+                      Android 12+)
+     allowBackup="false" alone is not enough on Android 12+ for device-to-device
+         transfer,
+     which follows dataExtractionRules; both are set. Everything Murmur keeps is
+         in
      noBackupFilesDir anyway — the rules are a second line of defense. -->
 
 <!-- res/xml/data_extraction_rules.xml -->

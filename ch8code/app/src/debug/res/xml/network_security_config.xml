@@ -1,9 +1,11 @@
-<!-- app/src/debug/res/xml/network_security_config.xml (DEBUG BUILDS ONLY: replaces the above) -->
+<!-- app/src/debug/res/xml/network_security_config.xml (
+    DEBUG BUILDS ONLY: replaces the above) -->
 <network-security-config>
     <!-- …same base-config and domain-configs as release… -->
     <debug-overrides>
         <trust-anchors>
-            <!-- Lets a debugging proxy (Chapter 1 lab) intercept AND bypass pins. -->
+            <!-- Lets a debugging proxy (
+                Chapter 1 lab) intercept AND bypass pins. -->
             <certificates src="user" overridePins="true" />
         </trust-anchors>
     </debug-overrides>

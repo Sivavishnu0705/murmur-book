@@ -43,7 +43,7 @@ This is the layout Appendix E describes (`ch27code/`, `ch30code/`, …). The lab
 ```bash
 python3 -m venv ~/murmur-venv && . ~/murmur-venv/bin/activate
 pip install -r requirements.txt
-./scripts/check.sh            # about two minutes
+./scripts/check.sh            # about 15 minutes with Rust, 3 without
 ```
 
 Then run any chapter's code from its folder, for example:
@@ -54,42 +54,63 @@ cd ch6code  && python3 tls13_key_schedule.py   # checked against RFC 8448
 cd ch7code/lab && go run .              # TLS resumption, Too Early, exporters
 ```
 
+The Part V labs run against the Go server of their chapter:
+
+```bash
+cd ch27code/server && go run . -selftest                  # MLS framing, mTLS, log allowlist
+go build -o /tmp/murmur-lab . && cd ../lab && python3 lab.py /tmp/murmur-lab
+```
+
+Chapters 30 and 31 also need the Rust core and its Python bindings (Appendix E.6):
+
+```bash
+cd ch30code/core && cargo build --release
+cargo run --release --bin uniffi-bindgen -- generate \
+    --library target/release/libmurmur_groups.so --language python --out-dir py
+cp target/release/libmurmur_groups.so py/
+```
+
 Versions, the local PKI, PostgreSQL, and emulator and simulator setup are covered in Appendix E.
+
+## The server, chapter by chapter
+
+`ch27code/server` is the complete lab server: the printed listings plus what Chapter 27
+lists under "Described only" (`main.go` for routing and wiring, `store.go` for the in-memory
+store, the self-test, and the Chapter 13, 18 and 26 code it reuses unchanged).
+
+`ch28code/server` through `ch31code/server` are snapshots: each is the previous chapter's
+server plus that chapter's changes, and each builds and runs on its own. The changes are
+noted at the top of each changed file. In `ch31code/server`, everything lab-only carries the
+`lab` build tag: `go build .` produces a release binary that refuses to start (exit 2), and
+`go build -tags lab .` produces the lab server with the malicious-server mode of Listing 31.4.
+Listing 31.1, the key-rotation job, is a separate program in `ch31code/rotation`.
+
+`ch27code/mlsgen` regenerates `ch27code/server/mls_vectors.json`, the OpenMLS 0.7.4 messages
+that the Chapter 27 self-test and lab send through the delivery service.
 
 ## What CI checks
 
 On every push, `scripts/check.sh` checks the following:
 
-- **45 Python listings and labs** run and finish without errors, including every Part IV protocol (AKE, Noise, X3DH, PQXDH, Double Ratchet, safety numbers, key transparency, sender keys) and the Chapter 25 fuzzers and property tests.
-- **Appendix C** regenerates every test vector, and its output must be **identical, byte for byte,** to the output printed in the book.
-- **24 Go programs** build and pass `go vet`.
-- The three protobuf schemas compile.
+- **Every Python listing and lab** runs and finishes without errors, including every Part IV
+  protocol (AKE, Noise, X3DH, PQXDH, Double Ratchet, safety numbers, key transparency, sender
+  keys) and the Chapter 25 fuzzers and property tests.
+- **Appendix C** regenerates every test vector, and its output must be **identical, byte for
+  byte,** to the output printed in the book.
+- **Every Go program** builds and passes `go vet` (with `-tags lab` where a directory has lab
+  code), and the three protobuf schemas compile.
+- **The Part V labs run end to end:** the Chapter 14 passkey lab, the Chapter 27 self-test, and
+  the Chapter 27, 28 and 29 labs against their servers.
+- **Rust:** every crate builds (Chapters 17, 23, 26, 27, 28 and 30). The Chapter 30 core's
+  Python bindings drive the Chapter 30 lab and the Chapter 31 red team, and the release gate of
+  Listing 31.3 must block the Chapter 30 tree and pass with Chapter 31's fixes.
+- The Chapter 31 release build refuses to start, and the rotation demo runs.
 
-Kotlin, Swift, and Rust aren't built in CI. The book's Appendix E.2 says how each was checked.
+Kotlin and Swift aren't built in CI. The book's Appendix E.2 says how they were checked; none
+of the platform code has been run on a device.
 
-## Known gaps
+## Line width
 
-The book describes some supporting code without printing it, so that code isn't in this repository yet:
-
-| Folder | What's missing | Why |
-|---|---|---|
-| `ch27code/server` … `ch30code/server` | `main.go` (routing and wiring), `store.go` (in-memory store), shared types and helpers | Chapter 27 lists them under "Described only" |
-| `ch14code/lab` | `cborEncode` helper | Not printed |
-| `ch14code/library` | murmur-auth's `Account`, `AccountDB` and `ErrConfirmFromAnotherDevice` types | Listing 14.3 uses them but doesn't print them |
-| Rust crates (`core/`, `ch23code/`) | `Cargo.toml` files | Not printed |
-| Chapters 27–31 labs | Need the running server above | — |
-
-Until those files are added, the Chapter 27–31 labs can't run from this repository.
-
-Some files are assembled rather than copied, and each one says so in its header:
-- `ch27code/spec/murmur.proto` and `ch29code/spec/murmur.proto` are Listing 26.1 plus the spec changes printed in Chapters 27 and 29.
-- `ch24code/server/directory_ch18.go` is Listing 18.3, which Chapter 24 reuses unchanged.
-- `appendix-c/pqxdh_vector.json` holds the ML-KEM ciphertext printed in full in Appendix C.
-
-## Safety
-
-Many listings are **deliberately insecure**. They're marked ⚠️ INSECURE in the code and in the book, and exist to be attacked. The toy protocols in Chapter 16 and the Chapter 31 malicious-server mode (`-tags lab`) are teaching tools. Never deploy them, and never put the lab PKI or test keys near real accounts.
-
-## Reporting errors
-
-Found a bug in a listing, or a difference between the book and this code? Open an issue with the listing number. Corrections go here first, so this repository can be more current than your printed copy.
+Every printed listing fits in 80 columns, so the book and this repository show the same
+lines. Go uses 4-space indentation rather than `gofmt`'s tabs for the same reason; the files
+that the book does not print are `gofmt`-formatted.

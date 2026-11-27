@@ -21,11 +21,14 @@
             <key>NSPinnedCAIdentities</key>
             <array>
                 <dict><key>SPKI-SHA256-BASE64</key>
-                      <string>pZEWrYb3RXviM6CaMuoD9K45oxRYxl3r6o2wVpxoB/4=</string></dict>
+                <string>pZEWrYb3RXviM6CaMuoD9K45oxRYxl3r6o2wVpxoB/4=</string>
+                </dict>
                 <dict><key>SPKI-SHA256-BASE64</key>
-                      <string>EkqLSW6Jl1MM8VzFhqEcKmKP8PtgnnpnTYDD4XC6gOM=</string></dict>
+                <string>EkqLSW6Jl1MM8VzFhqEcKmKP8PtgnnpnTYDD4XC6gOM=</string>
+                </dict>
                 <dict><key>SPKI-SHA256-BASE64</key>
-                      <string>EavOPsmWT0hCK0SJ4b77aBV0CjEUTSvCXYTEN0ihacI=</string></dict>
+                <string>EavOPsmWT0hCK0SJ4b77aBV0CjEUTSvCXYTEN0ihacI=</string>
+                </dict>
             </array>
         </dict>
     </dict>

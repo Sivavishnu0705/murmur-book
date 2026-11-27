@@ -1,7 +1,8 @@
 // MessagePipeline.swift
-// Listing 29.4 — Swift: the same pipelines on iOS. The app and its Notification Service
-// Extension both call `receive()`; the core's `BEGIN IMMEDIATE` transaction and its
-// `processed` table make that safe (Listing 29.11 runs exactly this race).
+// Listing 29.4 — Swift: the same pipelines on iOS. The app and its Notification
+// Service Extension both call `receive()`; the core's `BEGIN IMMEDIATE`
+// transaction and its `processed` table make that safe (Listing 29.11 runs
+// exactly this race).
 import Foundation
 import MurmurCore
 
@@ -18,7 +19,8 @@ actor MessagePipeline {
         guard core.trust(account: account) != .changedFromVerified else {
             await events.blockedByKeyChange(account); return
         }
-        try core.enqueueOutgoing(account: account, content: content)   // encrypt + outbox: COMMIT
+        // encrypt + outbox: COMMIT
+        try core.enqueueOutgoing(account: account, content: content)
         try await flushOutbox()
     }
 
@@ -28,15 +30,22 @@ actor MessagePipeline {
             var sealed = row.sealed
             attempts: for _ in 0..<3 {
                 let body = Self.body(row.account, envelopes)
-                let (data, resp) = sealed     // sealed: no Authorization, no DPoP — the relay must not learn the sender
-                    ? try await api.sendSealed(token: row.deliveryToken, body: body)
+                // sealed: no Authorization, no DPoP — the relay must not learn
+                // the sender
+                let (data, resp) = sealed
+                    ? try await api.sendSealed(token: row.deliveryToken,
+                        body: body)
                     : try await api.call("POST", "/v1/messages", body: body)
                 switch resp.statusCode {
                 case 202: try core.outboxDelivered(id: row.id); break attempts
-                case 409 where String(decoding: data, as: UTF8.self).contains("DEVICE_MISMATCH"):
-                    envelopes = try core.repairFanout(id: row.id, signedList: try await api.deviceList(row.account))
-                case 401 where sealed: try core.outboxUseIdentifiedRoute(id: row.id); sealed = false
-                default: break attempts          // retried by the next flush (launch, push, BGTask)
+                case 409 where String(decoding: data,
+                    as: UTF8.self).contains("DEVICE_MISMATCH"):
+                    envelopes = try core.repairFanout(id: row.id,
+                        signedList: try await api.deviceList(row.account))
+                case 401 where sealed: try core.outboxUseIdentifiedRoute(
+                    id: row.id); sealed = false
+                // retried by the next flush (launch, push, BGTask)
+                default: break attempts
                 }
             }
         }
@@ -48,10 +57,12 @@ actor MessagePipeline {
         var acked: [Data] = [], out: [Decrypted] = []
         for env in batch {
             do {
-                let r = try core.decrypt(envelope: env.body)   // dedupe + decrypt + persist, one transaction
+                // dedupe + decrypt + persist, one transaction
+                let r = try core.decrypt(envelope: env.body)
                 out.append(r); acked.append(env.guid)
             } catch CoreError.Storage {
-                break                                     // e.g. locked before first unlock: ack nothing more
+                // e.g. locked before first unlock: ack nothing more
+                break
             }
         }
         if !acked.isEmpty { try await api.ack(acked) }    // after the commits
@@ -59,7 +70,9 @@ actor MessagePipeline {
     }
 
     static func body(_ account: String, _ envs: [String: Data]) -> Data {
-        try! JSONSerialization.data(withJSONObject: ["recipient_account": account,
-            "envelopes": envs.map { ["device": $0.key, "body": $0.value.base64EncodedString()] }])
+        try! JSONSerialization.data(withJSONObject: [
+            "recipient_account": account,
+            "envelopes": envs.map { ["device": $0.key,
+            "body": $0.value.base64EncodedString()] }])
     }
 }

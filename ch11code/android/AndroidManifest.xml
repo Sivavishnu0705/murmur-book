@@ -1,7 +1,8 @@
 <!-- AndroidManifest.xml (excerpt): receive the claimed HTTPS redirect -->
 <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
           android:exported="true" tools:node="replace">
-    <intent-filter android:autoVerify="true">          <!-- App Link: verified via assetlinks.json -->
+    <intent-filter android:autoVerify="true">          <!-- App Link: verified
+        via assetlinks.json -->
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
@@ -9,5 +10,6 @@
               android:path="/oauth/callback" />
     </intent-filter>
 </activity>
-<!-- build.gradle: AppAuth also requires manifestPlaceholders["appAuthRedirectScheme"];
+<!-- build.gradle: AppAuth also requires
+    manifestPlaceholders["appAuthRedirectScheme"];
      set it to Murmur's reverse-DNS fallback scheme, "example.murmur". -->

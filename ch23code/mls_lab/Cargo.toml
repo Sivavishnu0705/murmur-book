@@ -1,0 +1,14 @@
+# Cargo.toml for the Chapter 23 MLS lab (Listing 23.1), as §23 "Hands-On Lab" describes.
+# Run in release mode: cargo run --release
+[package]
+name = "mls-lab"
+version = "0.23.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+openmls = "=0.7.4"
+# test-utils lets the lab copy a client's in-memory state to simulate compromise
+openmls_rust_crypto = { version = "=0.4.4", features = ["test-utils"] }
+openmls_basic_credential = "0.4"
+openmls_traits = "0.4"

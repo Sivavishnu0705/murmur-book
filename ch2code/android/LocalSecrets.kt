@@ -1,5 +1,6 @@
 // LocalSecrets.kt — AEAD for small local blobs (drafts, cached tokens).
-// Dependency: com.google.crypto.tink:tink-android (check for the current version)
+// Dependency: com.google.crypto.tink:tink-android (check for the current
+// version)
 import android.content.Context
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
@@ -8,10 +9,12 @@ import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
 object LocalSecrets {
-    private const val KEYSET_NAME = "murmur_local_aead_keyset"   // SharedPreferences key
+    // SharedPreferences key
+    private const val KEYSET_NAME = "murmur_local_aead_keyset"
     private const val PREF_FILE = "murmur_crypto_prefs"
     // The keyset is stored encrypted under this non-exportable Keystore key.
-    private const val MASTER_KEY_URI = "android-keystore://murmur_local_master_key"
+    private const val MASTER_KEY_URI =
+        "android-keystore://murmur_local_master_key"
 
     @Volatile private var cached: Aead? = null
 
@@ -19,7 +22,8 @@ object LocalSecrets {
         cached ?: run {
             AeadConfig.register()
             val handle = AndroidKeysetManager.Builder()
-                .withSharedPref(context.applicationContext, KEYSET_NAME, PREF_FILE)
+                .withSharedPref(context.applicationContext, KEYSET_NAME,
+                    PREF_FILE)
                 .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
                 .withMasterKeyUri(MASTER_KEY_URI)
                 .build()
@@ -39,5 +43,6 @@ fun saveDraft(context: Context, conversationId: Long, text: String): ByteArray {
 
 fun loadDraft(context: Context, conversationId: Long, blob: ByteArray): String {
     val aad = "murmur/v1/local/draft:conversation=$conversationId".toByteArray()
-    return String(LocalSecrets.aead(context).decrypt(blob, aad))   // throws on tamper
+    // throws on tamper
+    return String(LocalSecrets.aead(context).decrypt(blob, aad))
 }
