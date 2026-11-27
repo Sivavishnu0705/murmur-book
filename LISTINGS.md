@@ -21,6 +21,7 @@ Every code listing in the book, and where it lives in this repository.
 | 1 | 2.13 | Python: the cached-ephemeral bug | `ch2code/listing-2.13.py` |
 | 1 | 3.1 | YAML: threat-model template for Murmur | `ch3code/murmur-threat-model.yaml` |
 | 1 | 3.2 | Python: validating the model and printing a ranked checklist | `ch3code/check_threat_model.py` |
+| 1 | 4.1 | `openssl x509 -text` walk-through on a real public certificate | `ch4code/cryptography-io-2018.pem` |
 | 1 | 4.2 | Go: create a root CA, intermediates, and leaf certificates with correct extensions | `ch4code/murmurpki/listing-4.2.go` |
 | 1 | 4.3 | Python: parse a certificate and print SANs, EKUs, and SCTs | `ch4code/inspect_cert.py` |
 | 1 | 5.1 | Android Network Security Config: opting in to CT | `ch5code/res/xml/network_security_config.xml` |
@@ -128,6 +129,7 @@ Every code listing in the book, and where it lives in this repository.
 | 2 | 24.3 | Go: lab driver for the identity-key upload | `ch24code/server/main.go` |
 | 2 | 25.1 | Python: Hypothesis-based ratchet state-machine test | `ch25code/test_ratchet_props.py` |
 | 2 | 25.2 | Go fuzz test for the Murmur envelope parser | `ch25code/envelope/envelope.go`<br>`ch25code/envelope/envelope_fuzz_test.go` |
+| 2 | 25.3 | ProVerif: model of simplified X3DH with secrecy and authentication queries | `ch25code/x3dh.pv` |
 | 2 | 25.4 | Python: executable cross-check of the same flaw | `ch25code/check_spk_flaw.py` |
 | 2 | 25.5 | Go: measuring a timing side channel | `ch25code/ct/ct_test.go` |
 | 2 | 25.6 | CI pipeline YAML running vectors, fuzzers, and lint for insecure APIs | `ch25code/listing-25.6.yaml`<br>`ch25code/lint_insecure.py` |

@@ -11,3 +11,4 @@ keys.log
 *.key.pem
 murmur-pki/
 ch30code/core/py/
+ch4code/murmurpki/pki/

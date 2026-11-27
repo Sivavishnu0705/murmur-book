@@ -22,6 +22,7 @@ for f in listing-2.1 listing-2.2 listing-2.4 listing-2.6 listing-2.7 listing-2.9
 run ch3code python3 check_threat_model.py murmur-threat-model.yaml
 run ch5code python3 gen_bad_certs.py /tmp/murmur-cases
 run ch4code python3 inspect_cert.py /tmp/murmur-cases/good.chain.pem
+run ch4code openssl x509 -in cryptography-io-2018.pem -noout -text   # Listing 4.1
 run ch8code python3 spki_pin.py /tmp/murmur-cases/good.chain.pem
 run ch6code python3 tls13_key_schedule.py
 run ch7code python3 listing-7.4.py
@@ -38,6 +39,11 @@ for f in senderkeys lab; do run ch22code python3 "$f.py"; done
 export PYTHONPATH="$ROOT/ch18code:$ROOT/ch19code"
 for f in check_spk_flaw buggy_ratchet find_bug lint_insecure; do run ch25code python3 "$f.py"; done
 run ch25code python3 -m pytest -q -p no:cacheprovider test_ratchet_props.py
+if command -v proverif >/dev/null; then          # Listing 25.3 (optional: needs ProVerif)
+  run ch25code sh -c 'proverif x3dh.pv | grep -E "^RESULT"'
+else
+  echo "skip  ch25code: proverif x3dh.pv (ProVerif not installed)"
+fi
 unset PYTHONPATH
 for f in der_to_raw_test device_store; do run ch28code/client python3 "$f.py"; done
 run ch31code/redteam python3 mitm_proxy.py

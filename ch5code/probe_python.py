@@ -13,4 +13,4 @@ for i, case in enumerate(CASES):
                 result = "ACCEPT"
     except ssl.SSLCertVerificationError as e:
         result = "REJECT  " + e.verify_message
-    print(f"{case:22} | {result}")
+    print(f"{case}\n  {result}")

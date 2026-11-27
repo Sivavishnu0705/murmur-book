@@ -4,7 +4,9 @@ Companion code for the two-volume book *Volume 1: Trust, Transport, and Identity
 
 Every listing in both volumes is here, organized by chapter. Where the book prints only an excerpt, this repository has the complete file. The book points to each file by its path, for example:
 
-> **Listing 27.7: Go: the relay.** Full file: `ch27code/server/relay.go`
+> ### Listing 27.7 — Go: the relay
+>
+> **Code:** `ch27code/server/relay.go`
 
 The full list of listings and their files is in [LISTINGS.md](LISTINGS.md).
 
@@ -51,7 +53,8 @@ Then run any chapter's code from its folder, for example:
 ```bash
 cd ch19code && python3 lab.py           # Double Ratchet lab
 cd ch6code  && python3 tls13_key_schedule.py   # checked against RFC 8448
-cd ch7code/lab && go run .              # TLS resumption, Too Early, exporters
+cd ch4code/murmurpki && go run . issue -out ./pki      # Chapter 4 PKI, used by Ch 7
+cd ch7code/lab && go run . ../../ch4code/murmurpki/pki  # resumption, Too Early, exporters
 ```
 
 The Part V labs run against the Go server of their chapter:
@@ -114,3 +117,11 @@ of the platform code has been run on a device.
 Every printed listing fits in 80 columns, so the book and this repository show the same
 lines. Go uses 4-space indentation rather than `gofmt`'s tabs for the same reason; the files
 that the book does not print are `gofmt`-formatted.
+
+## Verification notes
+
+[VERIFICATION.md](VERIFICATION.md) records, chapter by chapter, what was run, against which versions, and what each lab stands in for. The book's "About the listings" notes summarize it.
+
+## License
+
+The code in this repository is released under the MIT License; see [LICENSE](LICENSE). `ch4code/cryptography-io-2018.pem` is a public, long-expired certificate taken from the `cryptography` project's test vectors (`cryptography_vectors`, Apache-2.0 / BSD-3-Clause).

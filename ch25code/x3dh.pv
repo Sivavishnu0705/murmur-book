@@ -1,0 +1,81 @@
+(* Listing 25.3 — ProVerif: simplified X3DH (three DHs, no one-time prekey)
+   with a secrecy query that covers LATER compromise of Bob's identity key
+   (forward secrecy), and an authentication query. The deliberately inserted
+   flaw: AliceFlawed does not verify the signed prekey.
+   Run once with AliceFlawed and once with Alice (switch the marked line in
+   `process`):
+       proverif x3dh.pv
+   §25.4 states the expected results, and Listing 25.4 checks the same flaw
+   executably. *)
+
+free c: channel.
+
+(* Diffie–Hellman *)
+type exponent.
+type G.
+const g: G [data].
+fun exp(G, exponent): G.
+equation forall x: exponent, y: exponent;
+  exp(exp(g, x), y) = exp(exp(g, y), x).
+
+(* Signatures (Bob's identity signing key; XEdDSA in the real protocol) *)
+type sskey.
+type spkey.
+fun spk(sskey): spkey.
+fun sign(G, sskey): bitstring.
+reduc forall m: G, k: sskey; checksign(sign(m, k), spk(k), m) = true.
+
+(* KDF and AEAD *)
+type key.
+fun kdf(G, G, G): key.
+fun aenc(bitstring, key, bitstring): bitstring.
+reduc forall m: bitstring, k: key, ad: bitstring;
+  adec(aenc(m, k, ad), k, ad) = m.
+fun ad(G, G): bitstring [data].
+
+free secret_msg: bitstring [private].
+
+event AliceSent(G, G).                  (* Alice's identity, Bob's identity *)
+event BobReceived(G, G).
+
+query attacker(secret_msg).                    (* secrecy, in every phase *)
+query a: G, b: G; event(BobReceived(a, b)) ==> event(AliceSent(a, b)).
+
+(* Alice knows Bob's genuine identity keys out of band (verified safety
+   number, Ch 20), but receives the signed prekey from the untrusted server
+   (channel c). *)
+let AliceSend(ia: exponent, IKB: G, SPKB: G) =
+    new ea: exponent;
+    (* DH1, DH2, DH3 *)
+    let k = kdf(exp(SPKB, ia), exp(IKB, ea), exp(SPKB, ea)) in
+    event AliceSent(exp(g, ia), IKB);
+    out(c, (exp(g, ia), exp(g, ea), aenc(secret_msg, k, ad(exp(g, ia), IKB)))).
+
+(* the protocol as specified *)
+let Alice(ia: exponent, IKB: G, SKB: spkey) =
+    in(c, (SPKB: G, sig: bitstring));
+    if checksign(sig, SKB, SPKB) = true then AliceSend(ia, IKB, SPKB).
+
+(* ⚠️ skips the signature check *)
+let AliceFlawed(ia: exponent, IKB: G, SKB: spkey) =
+    in(c, (SPKB: G, sig: bitstring));
+    AliceSend(ia, IKB, SPKB).
+
+let Bob(ib: exponent, sb: sskey, IKA: G) =
+    new s: exponent;                                   (* signed prekey *)
+    out(c, (exp(g, s), sign(exp(g, s), sb)));
+    in(c, (=IKA, EKA: G, ct: bitstring));
+    let k = kdf(exp(IKA, s), exp(EKA, ib), exp(EKA, s)) in
+    let m = adec(ct, k, ad(IKA, exp(g, ib))) in
+    event BobReceived(IKA, exp(g, ib));
+    0.
+
+process
+    new ia: exponent; new ib: exponent; new sb: sskey;
+    out(c, (exp(g, ia), exp(g, ib), spk(sb)));               (* public keys *)
+    (* ← switch AliceFlawed to Alice for the fix *)
+    (  (!AliceFlawed(ia, exp(g, ib), spk(sb)))
+     | (!Bob(ib, sb, exp(g, ia)))
+     | (phase 1; out(c, ib))   (* LATER: Bob's identity key leaks; his
+                                  signed-prekey privates are gone *)
+    )

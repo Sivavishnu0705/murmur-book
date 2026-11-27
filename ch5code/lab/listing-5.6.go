@@ -80,14 +80,11 @@ func probe(dir string) {
     }
     roots := x509.NewCertPool()
     roots.AppendCertsFromPEM(pemBytes)
-    fmt.Printf("%-22s | %-70s | %s\n", "case",
-        "correctConfig (standard + policy)", "brokenConfig")
-    fmt.Println(strings.Repeat("-", 22) + "-+-" + strings.Repeat("-",
-        70) + "-+-" + strings.Repeat("-", 12))
+    // One case per block, so each line fits an 80-column terminal.
     for i, c := range cases {
-        fmt.Printf("%-22s | %-70s | %s\n", c,
-            try(correctConfig(roots, host), port(i)), try(brokenConfig(roots,
-            host), port(i)))
+        fmt.Println(c)
+        fmt.Printf("  correct  %s\n", try(correctConfig(roots, host), port(i)))
+        fmt.Printf("  broken   %s\n", try(brokenConfig(roots, host), port(i)))
     }
 }
 
