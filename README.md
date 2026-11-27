@@ -35,6 +35,7 @@ ch2code/ … ch32code/     one folder per chapter
   spec/                  protobuf schema as of that chapter (Ch 26, 27, 29)
 appendix-c/              test-vector generator and its expected output
 scripts/check.sh         runs everything that can run without a phone or the full server
+docs/                    Appendix E (lab setup) and Appendix G (further reading), kept current here
 LISTINGS.md              listing number → file
 ```
 
@@ -73,7 +74,7 @@ cargo run --release --bin uniffi-bindgen -- generate \
 cp target/release/libmurmur_groups.so py/
 ```
 
-Versions, the local PKI, PostgreSQL, and emulator and simulator setup are covered in Appendix E.
+Versions, the local PKI, PostgreSQL, and emulator and simulator setup are covered in Appendix E, whose full text is [docs/appendix-e-lab-setup.md](docs/appendix-e-lab-setup.md). The reading list (Appendix G) is [docs/appendix-g-further-reading.md](docs/appendix-g-further-reading.md).
 
 ## The server, chapter by chapter
 

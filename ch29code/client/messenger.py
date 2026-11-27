@@ -404,11 +404,10 @@ class Messenger(StoredDevice):
                     # token changed (e.g. reinstall): send identified
                     if st == 401:
                         route = "identified"; continue
-                # key = H(outbox id ‖ exact body): a retry of the same bytes is
-                # deduplicated,
                 else:
-                        # a repaired (different) body is a different request
-                        # with a different key
+                    # key = H(outbox id ‖ exact body): a retry of the same bytes
+                    # is deduplicated; a repaired (different) body is a
+                    # different request with a different key
                     idem = hashlib.sha256((oid + json.dumps(body,
                         sort_keys=True)).encode()).hexdigest()[:32]
                     st, js = self.call("POST", "/v1/messages", body, idem=idem)
@@ -541,9 +540,9 @@ class Messenger(StoredDevice):
             except (InvalidTag, InvalidSignature, ValueError):
                 return ("rejected", "unsealing or sender certificate failed")
             peer = self.peer_key(cert.account, cert.device)
-            # the server signs certificates, so a malicious
+            # the server signs certificates, so a malicious one could invent
+            # devices: accept only devices in the sender's signed list
             if not self._listed(cert):
-                # one could invent devices
                 return ("rejected",
                     "sender device not in the sender's AIK-signed device list")
             if inner.type == pb.PREKEY_MESSAGE:

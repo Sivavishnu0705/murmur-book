@@ -32,8 +32,8 @@ while msg_no < 90:
             stolen_at = msg_no
         if mallory is not None and msg_no > stolen_at:
             # Mallory tries to read Alice's messages with her copy of Bob's
-            # state (she can't read Bob's own new sends either: they'd need
-            # Alice's state). She never sends anything.
+            # state. Bob's new sends are out of reach from msg 54: they use a
+            # ratchet key she never saw. She never sends anything.
             if sender is alice:
                 try:
                     mallory.decrypt(hb, ct, AD)

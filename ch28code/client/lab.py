@@ -2,7 +2,7 @@
 """Listing 28.15 — Python: lab driver — two devices registered. An "Android"
 device for Alice and an "iOS" device for Bob enroll, generate and store their
 keys in the SQLCipher model, upload them, verify each other's bundles, exchange
-a first message, keep prekeys stocked for five simulated weeks, retry safely,
+a first message, keep prekeys stocked for six simulated weeks, retry safely,
 and finally have their local storage inspected and wiped."""
 import glob, json, os, random, sqlite3, subprocess, sys, tempfile, atexit, time
 HERE = os.path.dirname(os.path.abspath(__file__))
